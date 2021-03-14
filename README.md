@@ -63,8 +63,11 @@ The schedule below is tentative and subject to change, depending on time and cla
 
 ### Part I: Supervised Machine Learning
 
-1. [Course Overview](https://raw.githack.com/ml4econ/lecture-notes-2020/master/01-overview/01-overview.html)  
+1. [Course Overview](https://raw.githack.com/ml4econ/lecture-notes-2021/master/01-overview/01-overview.html)
+[(PDF)](https://github.com/ml4econ/lecture-notes-2021/blob/master/01-overview/01-overview.pdf) 
 
+2. [Basic ML Concepts](https://raw.githack.com/ml4econ/lecture-notes-2021/master/02-basic-ml-concepts/02-basic-ml-concepts.html)
+[(PDF)](https://github.com/ml4econ/lecture-notes-2020/blob/master/02-basic-ml-concepts/02-basic-ml-concepts.pdf) 
 
 
 ### Part II: Causal Inference and ML
