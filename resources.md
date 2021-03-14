@@ -1,7 +1,7 @@
 Resources for Machine Learning for Economists
 ================
 
-### Spring 2020 @ the Hebrew University of Jerusalem
+### Spring 2021 @ the Hebrew University of Jerusalem
 
 
 __NOTE:__ The following list of references and links may be useful. However, note that they _do not_ necessarily cover all the material we plan to cover in the class.
@@ -40,6 +40,11 @@ Lecture, 2017.
 [Business Data Science: Combining Machine Learning and Economics to Optimize, Automate, and Accelerate Business Decisions](https://www.amazon.com/Business-Data-Science-Combining-Accelerate/dp/1260452778)  
 *Matt Taddy*  
 To the best of my knowledge, this is the first textbook out there that weaves together concepts from econometrics and machine learning.
+
+[Econometrics](https://www.ssc.wisc.edu/~bhansen/econometrics/)
+*Bruce E. Hansen*
+Chapter 29 includes a rigorous take on ML in general and in the context of econometrics.
+
 
 ### __Machine Learning__
 
