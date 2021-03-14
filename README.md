@@ -10,9 +10,9 @@ Teaching assistant: David Harar
 :spiral_calendar: Spring semester, 2021
 :alarm_clock:     17:30 - 20:15
 :hotel:           There's no place like home...
-:writing_hand:    [github.com/ml4econ](https://github.com/ml4econ)
+:writing_hand:    [github.com/ml4econ](https://github.com/ml4econ/lecture-notes-2021)
 
-:family:          [Moodle Discussion Forum](https://moodle2.cs.huji.ac.il/nu19/mod/forum/view.php?id=205609)
+:family:          [Moodle Discussion Forum](https://moodle2.cs.huji.ac.il/nu20/mod/forum/view.php?id=342325)
 
 -----
 
