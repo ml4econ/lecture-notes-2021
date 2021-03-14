@@ -45,8 +45,8 @@ The schedule below is tentative and subject to change, depending on time and cla
 
 | Week                  | Topic                                               |
 |:----------------------|:----------------------------------------------------|
-| [**1**](#week-1)      | Course Overview & Reproducibility                   |
-| [**2**](#week-2)      | Basic ML Concepts                                   |
+| [**1**](#week-1)      | Course Overview & Basic ML Concepts                 |
+| [**2**](#week-2)      | Reproducibility & ML Workflow                       |
 | [**3**](#week-3)      | Regression and Regularization                       |
 | [**4**](#week-4)      | Classification                                      |
 | [**5**](#week-5)      | Trees and Forests                                   |
@@ -82,9 +82,9 @@ Can be found [here](https://github.com/ml4econ/lecture-notes-2021/blob/master/re
 
 ## People
 
-+ [**Itamar Caspi**](https://itamarcaspi.rbind.io) is a Senior Economist and Head of the Monetary Analysis Unit at Bank of Israel's Research Department. In the past, he was a Central Bank Research Fellow at the Bank for International Settlements (BIS) and held a position at the Chief Economist Department of the Israeli Ministry of Finance. He has coauthored several R packages. Itamar received his B.A. degree in economics and business administration from Ben-Gurion University, Beer Sheva, Israel, and an M.A. degree in economics from the Hebrew University of Jerusalem, Jerusalem, Israel. He is expected to receive his Ph.D. degree in Economics from Bar-Ilan University in 2020.
++ [**Itamar Caspi**](https://itamarcaspi.rbind.io) is Head of the Monetary Analysis Unit in the Research Department of the Bank of Israel, and an adjunct lecturer at the Hebrew University, having started off in 2010 as an Economist at the Ministry of Finance. In 2012 he moved to the Bank of Israel, and was promoted in 2018 to Senior Economist and elected to represent the Bank as a Research Fellow for three months at the Bank for International Settlements in Switzerland. He holds a BA in Economics and Business Administration from Ben-Gurion University, MA in Economics from the joint research program at Hebrew University and Tel-Aviv University, and a PhD in economics from Bar-Ilan University.
 
-+ **David Harar** TBA
++ **David Harar** is a research fellow at the IEP and former economist in the Israeli Antitrust Authority's research department. He holds an MA in Economics and is currently pursuing an MA in Statistics, both from the Hebrew University of Jerusalem. David's interests include competition economics, demand estimation, machine learning and econometrics.
 
 -----
 

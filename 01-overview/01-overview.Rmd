@@ -1,8 +1,8 @@
 ---
 title: "01 - Course Overview"
-subtitle: "ml4econ, HUJI 2020"
+subtitle: "ml4econ, HUJI 2021"
 author: "Itamar Caspi"
-date: "March 15, 2020 (updated: `r Sys.Date()`)"
+date: "March 14, 2021 (updated: `r Sys.Date()`)"
 output:
   xaringan::moon_reader:
     css: [default, "style/middlebury.css", "style/middlebury-fonts.css"]
@@ -52,17 +52,6 @@ bib <- ReadBib("refs/refs.bib", check = FALSE)
 
 
 
-class: .title-slide-final, center, inverse, middle
-
-# 10-Year challenge
-
-.big[
-__2010: ML = Maximum Likelihood__  
-__2020: ML = Machine Learning__
-]
-
-
----
 
 # An aside: about the structure of these slides
 
@@ -114,19 +103,15 @@ knitr::include_graphics("figs/repo.gif")
 ```
 
 ---
-# ml4econ RStudio Cloud workspace
+# RStudio Cloud workspace
 
 [RStudio Cloud](https://rstudio.cloud/) is a hosted version of RStudio in the cloud that will make it easy for R and RStudio novices to learn data science and machine learning using R.
-
-You can access our ml4econ workspace [here](https://rstudio.cloud/spaces/50787/projects).
 
 ```{r, echo=FALSE, out.width = "80%", fig.align='center'}
 
 knitr::include_graphics("figs/rstudiocloud.gif")
 
 ```
-
-
 
 
 ---
@@ -137,11 +122,11 @@ knitr::include_graphics("figs/rstudiocloud.gif")
 - __Itamar Caspi__  
   - Head of Monetary Analysis Unit, Research Department, Bank of Israel.
   - email: [caspi.itamar@gmail.com](mailto:caspi.itamat@gmail.com) 
-  - homepage: [https://itamarcaspi.rbind.io/](https://itamarcaspi.rbind.io/)
+  - homepage: [itamarcaspi.rbind.io](https://itamarcaspi.rbind.io/)
   
-- __Dor Goldenberg__  
-  - Asistant economist, Monetary Analysis Unit, Research Department, Bank of Israel; MA student, HUJI.
-  - email: [dorgoldenberg@gmail.com ](mailto:dorgoldenberg@gmail.com )
+- __David Harar__  
+  - Research fellow at the IEP. MA in Economics and is currently pursuing an MA in Statistics, (HUJI).
+  - email: [david.harar@mail.huji.ac.il](mailto:david.harar@mail.huji.ac.il)
 
 
 * Meeting hours: after class, on demand.
@@ -168,40 +153,6 @@ Please feel free to contact us by
 class: title-slide-section-blue, center, middle
 name: about
 
-
----
-
-# Slack (?)
-
-
-.pull-left[
-
-```{r, echo=FALSE, out.width = "50%", fig.align='center'}
-knitr::include_graphics("https://seeklogo.net/wp-content/uploads/2019/01/new-Slack-logo-vector.png")
-```
-
-_"Slack is a collaboration hub that can replace email to help you and your team work together seamlessly. It’s designed to support the way people naturally work together, so you can collaborate with people online as efficiently as you do face-to-face."_
-
-]
-
-.pull-right[
-
-[Sign-up and download](https://slack.com)
-
-
-[How to use Slack (YouTube)](https://www.youtube.com/watch?v=7YUTc4Cigc8)
-
-[Joint our workspace!](https://join.slack.com/t/ml4econ/shared_invite/zt-czg0k4sw-7VKlnyWPBAZ3yUu7sY_Upw)
-
-Our workspace's name is `ml4econ`. I'll send you an invitation soon. We will host 4 channels:
-
-- `#general` - questions about the lectures
-- `#problem-sets`- questions about the problem-sets
-- `#projects` - questions about the projects
-- `#test` - questions about the test
-
-
-]
 
 
 ---
@@ -265,8 +216,9 @@ To do that we will need to understand
 
 | Week                  | Topic                                      |
 |:----------------------|:-------------------------------------------|
-| [**1**](#week-1)      | Course Overview & Reproducibility          |
-| [**2**](#week-2)      | Basic ML Concepts                          |
+| [**1**](#week-1)      | Course Overview & ML Basics
+|
+| [**2**](#week-2)      | Reproducibility and ML Workflow                          |
 | [**3**](#week-3)      | Regression and Regularization              |
 | [**4**](#week-4)      | Classification                             |
 | [**5**](#week-5)      | Non-parametrics                            |
@@ -346,6 +298,37 @@ knitr::include_graphics("figs/books.png")
 
 ---
 
+# Textbooks (optional)
+
+> All materials and lecture notes will be available on the [course repo](https://ml4econ.github.io/course-spring2019/lectures.html).
+
+.pull-left[
+
+There are __no__ required textbooks.  
+
+A couple of suggestions:
+
+- [Business Data Science by Matt Taddy](http://taddylab.com/BDS.html)  
+__No free version available__ 
+
+- [Econometrics by Bruce Hansen, Ch. 29](https://www.ssc.wisc.edu/~bhansen/econometrics/Econometrics.pdf)  
+__PDF available online__  
+
+]
+
+.pull-right[
+
+```{r bds, echo=FALSE, out.width = "50%", fig.align='center'}
+
+knitr::include_graphics("figs/bds.png")
+
+```
+
+]
+
+
+---
+
 # More resources
 
 Can be found at our GitHub repo:
@@ -374,12 +357,12 @@ Can be found at our GitHub repo:
 
 ---
 
-# DataCamp in the classroom
+# Catching up with R
 
 
-```{r datacamp, echo=FALSE, out.width = "100%", fig.align='center'}
+```{r datacamp, echo=FALSE, out.width = "70%", fig.align='center'}
 
-knitr::include_graphics("figs/datacamp1.gif")
+knitr::include_graphics("figs/primer.png")
 
 ```
 
@@ -400,12 +383,10 @@ Projects:
 - Conduct a replication study based on one of the datasets included in the [experimentdatar](https://itamarcaspi.github.io/experimentdatar/) package, or a paper of your choice.
 
 .center[
-__GRADING:__ Assingments __20%__, project __40%__, final exam __40%__.
+__GRADING:__ Assingments __20%__, kaggle __40%__, project __40%__.
 ]
 
 ???
-
-* DataCamp for the Classroom offer of high-quality, self-paced content and straightforward, easy-to-use interface for both students and instructors. In particular, enrolling to our ml4e DataCamp for the Classroom account will enable you 100% free access to all of DataCamp’s content, including their premium content.  
 
 * One of your tasks in this course will be a [Kaggle](https://www.kaggle.com) competition. In this competition, you will rely on the “Boston Housing Data” to train and test machine learning models learned in the course. In particular, you will be required to apply the tools introduced in the course in order to predict ... [website](https://www.kaggle.com/t/97eb0edcbe7c406882c7c067076bedd3).
   
@@ -458,18 +439,12 @@ name: todo
 
 <i class="fas fa-check-square"></i> Create an account on [GitHub](http://github.com/)
 
-<!-- <i class="fas fa-check-square"></i> Download and install [GitHub Desktop](https://desktop.github.com/).   -->
-
-<i class="fas fa-check-square"></i> Create an account on [Rstudio Cloud](https://login.rstudio.cloud/register) and ask Dor/Itamar to invite you to our workspace.
-
-<i class="fas fa-check-square"></i> Create an account on [DataCamp](https://www.datacamp.com/home) and ask Dor/Itamar to invite you to [DataCamp Classroom](https://www.datacamp.com/enterprise/machine-learning-for-economists).
-
-<!-- <i class="fas fa-check-square"></i> Create an account on [Kaggle](www.kaggle.com) and ask Itamar to invite you the course's [prediction competition](https://www.kaggle.com/t/97eb0edcbe7c406882c7c067076bedd3). -->
+<i class="fas fa-check-square"></i> Download and install [GitHub Desktop](https://desktop.github.com/).
 
 
 
 .footnote[
-[*] Please consult the [Guides](https://ml4econ.github.io/course-spring2019/RnRStudio.html) section in our course's website.
+[*] Please consult the [Guides](https://ml4econ.github.io/course-spring2019/RnRStudio.html) section in the course's old website.
 ]
 
 
@@ -478,9 +453,7 @@ class: .title-slide-final, center, inverse, middle
 
 # `slides %>% end()`
 
-[<i class="fa fa-github"></i> Source code](https://github.com/ml4econ/lecture-notes-2020/blob/master/01-overview/01-overview.Rmd)  
-
-[<i class="fa fa-cloud"></i> RStudio Cloud Project](https://rstudio.cloud/spaces/50787/project/987890) 
+[<i class="fa fa-github"></i> Source code](https://github.com/ml4econ/lecture-notes-2021/blob/master/01-overview/01-overview.Rmd)  
 
 ---
 # References
