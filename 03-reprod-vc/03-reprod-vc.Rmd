@@ -1,8 +1,8 @@
 ---
-title: "02 - Reproducibility and Version Control"
-subtitle: "ml4econ, HUJI 2020"
+title: "03 - Reproducibility and Version Control"
+subtitle: "ml4econ, HUJI 2021"
 author: "Itamar Caspi"
-date: "March 15, 2020 (updated: `r Sys.Date()`)"
+date: "March 21, 2021 (updated: `r Sys.Date()`)"
 output:
   xaringan::moon_reader:
     css: [default, "style/middlebury.css", "style/middlebury-fonts.css"]
@@ -236,6 +236,17 @@ knitr::include_graphics("figs/pipe.jpg")
 
 The second line of code should be read as: "take `x`, _then_ put it through `f()`, _then_ put the result through `g(. , z)`, _then_ put the result through `h()`, and finally, keep the result in y.
 
+
+---
+# Morning Routine
+
+```{r pipe2, echo=FALSE, out.width = "80%", fig.align='center'}
+
+knitr::include_graphics("figs/pipe2.png")
+
+```
+
+Source: [https://twitter.com/andrewheiss/status/1359583543509348356?s=20](https://twitter.com/andrewheiss/status/1359583543509348356?s=20)
 ---
 
 # Base R vs. the Tidyverse
@@ -562,7 +573,7 @@ Syncing:
 ---
 # Your Mission
 
-1. Login to RStudio Cloud.
+1. Open RStudio (or login to RStudio Cloud.)
 
 2. Create your first R project.
 
@@ -585,8 +596,4 @@ class: .title-slide-final, center, inverse, middle
 # `slides %>% end()`
 
 
-[<i class="fa fa-github"></i> Source code](https://github.com/ml4econ/lecture-notes-2020/tree/master/02-reprod-vc)  
-
-[<i class="fa fa-cloud"></i> RStudio Cloud Project](https://rstudio.cloud/spaces/50787/project/987890) 
-
-
+[<i class="fa fa-github"></i> Source code](https://github.com/ml4econ/lecture-notes-2021/tree/master/03-reprod-vc)  

@@ -1,7 +1,7 @@
 Machine Learning for Economists
 ================
 
-### Spring 2021 @ the Hebrew University of Jerusalem
+### Spring 2021 @ Hebrew University of Jerusalem
 
 Instructor: [Itamar Caspi](https://itamarcaspi.rbind.io)
 
@@ -63,11 +63,14 @@ The schedule below is tentative and subject to change, depending on time and cla
 
 ### Part I: Supervised Machine Learning
 
-1. [Course Overview](https://raw.githack.com/ml4econ/lecture-notes-2021/master/01-overview/01-overview.html)
+1. Course Overview [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/01-overview/01-overview.html)
 [(PDF)](https://github.com/ml4econ/lecture-notes-2021/blob/master/01-overview/01-overview.pdf) 
 
-2. [Basic ML Concepts](https://raw.githack.com/ml4econ/lecture-notes-2021/master/02-basic-ml-concepts/02-basic-ml-concepts.html)
+2. Basic ML Concepts [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/02-basic-ml-concepts/02-basic-ml-concepts.html)
 [(PDF)](https://github.com/ml4econ/lecture-notes-2020/blob/master/02-basic-ml-concepts/02-basic-ml-concepts.pdf) 
+
+2. R, Tidyverse, and Reproducible Projects [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/03-reprod-vs/03-reprod-vs.html)
+[(PDF)](https://github.com/ml4econ/lecture-notes-2020/blob/master/03-reprod-vs/03-reprod-vs.pdf) 
 
 
 ### Part II: Causal Inference and ML

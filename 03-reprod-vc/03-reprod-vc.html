@@ -1,23 +1,26 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="">
   <head>
-    <title>02 - Reproducibility and Version Control</title>
+    <title>03 - Reproducibility and Version Control</title>
     <meta charset="utf-8" />
     <meta name="author" content="Itamar Caspi" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+    <script src="libs/anchor-sections/anchor-sections.js"></script>
     <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
     <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
-    <link rel="stylesheet" href="style\middlebury.css" type="text/css" />
-    <link rel="stylesheet" href="style\middlebury-fonts.css" type="text/css" />
+    <link rel="stylesheet" href="style/middlebury.css" type="text/css" />
+    <link rel="stylesheet" href="style/middlebury-fonts.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# 02 - Reproducibility and Version Control
-## ml4econ, HUJI 2020
+# 03 - Reproducibility and Version Control
+## ml4econ, HUJI 2021
 ### Itamar Caspi
-### March 15, 2020 (updated: 2020-03-22)
+### March 21, 2021 (updated: 2021-03-21)
 
 ---
 
@@ -212,6 +215,13 @@ name: tidyverse
 
 The second line of code should be read as: "take `x`, _then_ put it through `f()`, _then_ put the result through `g(. , z)`, _then_ put the result through `h()`, and finally, keep the result in y.
 
+
+---
+# Morning Routine
+
+&lt;img src="figs/pipe2.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+Source: [https://twitter.com/andrewheiss/status/1359583543509348356?s=20](https://twitter.com/andrewheiss/status/1359583543509348356?s=20)
 ---
 
 # Base R vs. the Tidyverse
@@ -291,12 +301,11 @@ tidyverse_packages()
 ```
 
 ```
-##  [1] "broom"       "cli"         "crayon"      "dplyr"       "dbplyr"     
-##  [6] "forcats"     "ggplot2"     "haven"       "hms"         "httr"       
-## [11] "jsonlite"    "lubridate"   "magrittr"    "modelr"      "purrr"      
-## [16] "readr"       "readxl\n(&gt;=" "reprex"      "rlang"       "rstudioapi" 
-## [21] "rvest"       "stringr"     "tibble"      "tidyr"       "xml2"       
-## [26] "tidyverse"
+##  [1] "broom"      "cli"        "crayon"     "dbplyr"     "dplyr"      "forcats"   
+##  [7] "ggplot2"    "haven"      "hms"        "httr"       "jsonlite"   "lubridate" 
+## [13] "magrittr"   "modelr"     "pillar"     "purrr"      "readr"      "readxl"    
+## [19] "reprex"     "rlang"      "rstudioapi" "rvest"      "stringr"    "tibble"    
+## [25] "tidyr"      "xml2"       "tidyverse"
 ```
 
 Note that not all these packages are loaded by default (e.g., `lubrudate`.)
@@ -338,11 +347,10 @@ tidymodels::tidymodels_packages()
 ```
 
 ```
-##  [1] "broom"         "cli"           "crayon"        "dials"        
-##  [5] "dplyr"         "ggplot2"       "infer"         "magrittr"     
-##  [9] "parsnip"       "pillar"        "purrr"         "recipes"      
-## [13] "rlang"         "rsample"       "rstudioapi"    "tibble"       
-## [17] "tidytext"      "tidypredict"   "tidyposterior" "tune"         
+##  [1] "broom"         "cli"           "crayon"        "dials"         "dplyr"        
+##  [6] "ggplot2"       "infer"         "magrittr"      "parsnip"       "pillar"       
+## [11] "purrr"         "recipes"       "rlang"         "rsample"       "rstudioapi"   
+## [16] "tibble"        "tidytext"      "tidypredict"   "tidyposterior" "tune"         
 ## [21] "workflows"     "yardstick"     "tidymodels"
 ```
 
@@ -542,7 +550,7 @@ Syncing:
 ---
 # Your Mission
 
-1. Login to RStudio Cloud.
+1. Open RStudio (or login to RStudio Cloud.)
 
 2. Create your first R project.
 
@@ -565,9 +573,7 @@ class: .title-slide-final, center, inverse, middle
 # `slides %&gt;% end()`
 
 
-[&lt;i class="fa fa-github"&gt;&lt;/i&gt; Source code](https://github.com/ml4econ/lecture-notes-2020/tree/master/02-reprod-vc)  
-
-[&lt;i class="fa fa-cloud"&gt;&lt;/i&gt; RStudio Cloud Project](https://rstudio.cloud/spaces/50787/project/987890)
+[&lt;i class="fa fa-github"&gt;&lt;/i&gt; Source code](https://github.com/ml4econ/lecture-notes-2021/tree/master/03-reprod-vc)  
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
@@ -576,7 +582,7 @@ class: .title-slide-final, center, inverse, middle
 "highlightLines": true,
 "countIncrementalSlides": false,
 "ratio": "16:9",
-"slideNumberFormat": "<div class=\"progress-bar-container\">   <div class=\"progress-bar\" style=\"width: calc(%current% / %total% * 100%);\">   </div> </div> "
+"slideNumberFormat": "<div class=\"progress-bar-container\">\n  <div class=\"progress-bar\" style=\"width: calc(%current% / %total% * 100%);\">\n  </div>\n</div>\n"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
@@ -617,6 +623,32 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
 // adds .remark-code-has-line-highlighted class to <pre> parent elements
 // of code chunks containing highlighted lines with class .remark-code-line-highlighted
 (function(d) {
@@ -634,17 +666,6 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   }
   preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
 })(document);</script>
-
-<script>
-(function() {
-  var links = document.getElementsByTagName('a');
-  for (var i = 0; i < links.length; i++) {
-    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
-      links[i].target = '_blank';
-    }
-  }
-})();
-</script>
 
 <script>
 slideshow._releaseMath = function(el) {
