@@ -69,7 +69,7 @@ The schedule below is tentative and subject to change, depending on time and cla
 2. Basic ML Concepts [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/02-basic-ml-concepts/02-basic-ml-concepts.html)
 [(PDF)](https://github.com/ml4econ/lecture-notes-2020/blob/master/02-basic-ml-concepts/02-basic-ml-concepts.pdf) 
 
-2. R, Tidyverse, and Reproducible Projects [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/03-reprod-vc/03-reprod-vs.html)
+2. R, Tidyverse, and Reproducible Projects [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/03-reprod-vc/03-reprod-vc.html)
 [(PDF)](https://github.com/ml4econ/lecture-notes-2021/blob/master/03-reprod-vc/03-reprod-vc.pdf) 
 
 
