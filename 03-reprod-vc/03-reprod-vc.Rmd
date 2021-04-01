@@ -328,7 +328,7 @@ tidyverse_packages()
 
 Note that not all these packages are loaded by default (e.g., `lubrudate`.)
 
-We now briefly introduce one the tidyvers flagships: `dplyr`.
+We now briefly introduce one the tidyverse flagships: `dplyr`.
 
 ---
 

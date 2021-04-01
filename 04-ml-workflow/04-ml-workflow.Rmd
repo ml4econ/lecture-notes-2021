@@ -1,8 +1,8 @@
 ---
 title: "04 - A Typical (Supervised) ML Workflow"
-subtitle: "ml4econ, HUJI 2020"
+subtitle: "ml4econ, HUJI 2021"
 author: "Itamar Caspi"
-date: "April 5, 2020 (updated: `r Sys.Date()`)"
+date: "April 4, 2021 (updated: `r Sys.Date()`)"
 output:
   xaringan::moon_reader:
     css: [default, "style/middlebury.css", "style/middlebury-fonts.css"]
@@ -507,8 +507,7 @@ class: .title-slide-final, center, inverse, middle
 
 # `slides::end()`
 
-[<i class="fa fa-github"></i> Source code](https://github.com/ml4econ/lecture-notes-2020/tree/master/04-ml-workflow)  
+[<i class="fa fa-github"></i> Source code](https://github.com/ml4econ/lecture-notes-2021/tree/master/04-ml-workflow)  
 
-[<i class="fa fa-cloud"></i> RStudio Cloud Project](https://rstudio.cloud/spaces/50787/project/987890)
 
 
