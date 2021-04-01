@@ -72,7 +72,8 @@ The schedule below is tentative and subject to change, depending on time and cla
 3. R, Tidyverse, and Reproducible Projects [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/03-reprod-vc/03-reprod-vc.html)
 [(PDF)](https://github.com/ml4econ/lecture-notes-2021/blob/master/03-reprod-vc/03-reprod-vc.pdf)  
 
-4. [A Typical (Supervised) ML Workflow](https://raw.githack.com/ml4econ/lecture-notes-2021/master/04-ml-workflow/04-ml-workflow.html)
+4. A Typical (Supervised) ML Workflow [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/04-ml-workflow/04-ml-workflow.html)
+[(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/04-ml-workflow/04-ml-workflow.pdf)
 
 
 ### Part II: Causal Inference and ML
