@@ -64,16 +64,23 @@ The schedule below is tentative and subject to change, depending on time and cla
 ### Part I: Supervised Machine Learning
 
 1. Course Overview [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/01-overview/01-overview.html)
-[(PDF)](https://github.com/ml4econ/lecture-notes-2021/blob/master/01-overview/01-overview.pdf) 
+[(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/01-overview/01-overview.pdf) 
 
 2. Basic ML Concepts [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/02-basic-ml-concepts/02-basic-ml-concepts.html)
-[(PDF)](https://github.com/ml4econ/lecture-notes-2020/blob/master/02-basic-ml-concepts/02-basic-ml-concepts.pdf) 
+[(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2020/master/02-basic-ml-concepts/02-basic-ml-concepts.pdf) 
 
 3. R, Tidyverse, and Reproducible Projects [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/03-reprod-vc/03-reprod-vc.html)
-[(PDF)](https://github.com/ml4econ/lecture-notes-2021/blob/master/03-reprod-vc/03-reprod-vc.pdf)  
+[(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/03-reprod-vc/03-reprod-vc.pdf)  
 
 4. A Typical (Supervised) ML Workflow [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/04-ml-workflow/04-ml-workflow.html)
 [(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/04-ml-workflow/04-ml-workflow.pdf)
+
+5. Regression and Regularization
+[(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/05-regression-regularization/05-regression-regularization.html)
+[(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/05-regression-regularization/05-regression-regularization.pdf)  
+  5.1 [Prepare browser data](https://raw.githack.com/ml4econ/lecture-notes-2021/master/05-regression-regularization/05-prepare-browser-data.html)  
+  5.2 [Ridge and lasso simulation](https://raw.githack.com/ml4econ/lecture-notes-2021/master/05-regression-regularization/05-simulations.html)  
+  5.3 [Ridge, lasso, PCR and PLS: A Tidymodels Workflow](https://raw.githack.com/ml4econ/lecture-notes-2021/master/05-regression-regularization/05-tidymodels-workflow.html)  
 
 
 ### Part II: Causal Inference and ML
