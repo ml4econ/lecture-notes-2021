@@ -90,7 +90,7 @@ lm_results <- lm_wfl %>%
 show best results
 ```{r}
 lm_results %>% 
-  show_best(metric = "rmse", maximize = FALSE)
+  show_best(metric = "rmse")
 ```
 
 ## Set best lambda
@@ -98,15 +98,11 @@ lm_results %>%
 Two options: lambda that minimizes RMSE, and the 1 standard error rule of thumb:
 ```{r}
 lambda_min <- lm_results %>% 
-  select_best(
-    metric = "rmse",
-    maximize = FALSE
-  )
+  select_best(metric = "rmse")
 
 lambda_1se <- lm_results %>% 
   select_by_one_std_err(
     metric = "rmse",
-    maximize = FALSE,
     desc(penalty)
   ) %>% 
   select(penalty)
@@ -173,7 +169,7 @@ lm_results <- lm_wfl %>%
 show best results
 ```{r}
 lm_results %>% 
-  show_best(metric = "rmse", maximize = FALSE)
+  show_best(metric = "rmse")
 ```
 
 ## Set best number of components
@@ -181,15 +177,11 @@ lm_results %>%
 Two options: `num_comp` that minimizes RMSE, and the 1 standard error rule of thumb:
 ```{r}
 num_comp_min <- lm_results %>% 
-  select_best(
-    metric = "rmse",
-    maximize = FALSE
-  )
+  select_best(metric = "rmse")
 
 num_comp_1se <- lm_results %>% 
   select_by_one_std_err(
     metric = "rmse",
-    maximize = FALSE,
     desc(num_comp)
   ) %>% 
   select(num_comp)
@@ -261,7 +253,7 @@ pls_results <- pls_wfl %>%
 show best results
 ```{r}
 pls_results %>% 
-  show_best(metric = "rmse", maximize = FALSE)
+  show_best(metric = "rmse")
 ```
 
 ## Set best number of components
@@ -269,15 +261,11 @@ pls_results %>%
 Two options: `num_comp` that minimizes RMSE, and the 1 standard error rule of thumb:
 ```{r}
 num_comp_min <- pls_results %>% 
-  select_best(
-    metric = "rmse",
-    maximize = FALSE
-  )
+  select_best(metric = "rmse")
 
 num_comp_1se <- pls_results %>% 
   select_by_one_std_err(
     metric = "rmse",
-    maximize = FALSE,
     desc(num_comp)
   ) %>% 
   select(num_comp)
@@ -305,8 +293,11 @@ pls_results <- browser_test_results %>%
 # Summary
 
 ```{r}
-bind_rows(ridge_results,
-          pcr_results,
-          pls_results)
+bind_rows(
+  ridge_results,
+  pcr_results,
+  pls_results
+) %>% 
+  arrange(.estimate)
 ```
 

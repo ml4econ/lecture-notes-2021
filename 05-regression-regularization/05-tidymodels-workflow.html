@@ -1800,8 +1800,7 @@ div.tocify {
 <span id="cb10-4"><a href="#cb10-4"></a>  )</span></code></pre></div>
 <p>show best results</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>lm_results <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb11-2"><a href="#cb11-2"></a><span class="st">  </span><span class="kw">show_best</span>(<span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>, <span class="dt">maximize =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
-<pre><code>## Warning: The `maximize` argument is no longer needed. This value was ignored.</code></pre>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="st">  </span><span class="kw">show_best</span>(<span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 5 x 6
 ##    penalty .metric .estimator  mean     n std_err
 ##      &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
@@ -1814,31 +1813,26 @@ div.tocify {
 <div id="set-best-lambda" class="section level2">
 <h2>Set best lambda</h2>
 <p>Two options: lambda that minimizes RMSE, and the 1 standard error rule of thumb:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>lambda_min &lt;-<span class="st"> </span>lm_results <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb14-2"><a href="#cb14-2"></a><span class="st">  </span><span class="kw">select_best</span>(</span>
-<span id="cb14-3"><a href="#cb14-3"></a>    <span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>,</span>
-<span id="cb14-4"><a href="#cb14-4"></a>    <span class="dt">maximize =</span> <span class="ot">FALSE</span></span>
-<span id="cb14-5"><a href="#cb14-5"></a>  )</span></code></pre></div>
-<pre><code>## Warning: The `maximize` argument is no longer needed. This value was ignored.</code></pre>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>lambda_1se &lt;-<span class="st"> </span>lm_results <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-2"><a href="#cb16-2"></a><span class="st">  </span><span class="kw">select_by_one_std_err</span>(</span>
-<span id="cb16-3"><a href="#cb16-3"></a>    <span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>,</span>
-<span id="cb16-4"><a href="#cb16-4"></a>    <span class="dt">maximize =</span> <span class="ot">FALSE</span>,</span>
-<span id="cb16-5"><a href="#cb16-5"></a>    <span class="kw">desc</span>(penalty)</span>
-<span id="cb16-6"><a href="#cb16-6"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb16-7"><a href="#cb16-7"></a><span class="st">  </span><span class="kw">select</span>(penalty)</span></code></pre></div>
-<pre><code>## Warning: The `maximize` argument is no longer needed. This value was ignored.</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>lambda_min &lt;-<span class="st"> </span>lm_results <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="st">  </span><span class="kw">select_best</span>(<span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>)</span>
+<span id="cb13-3"><a href="#cb13-3"></a></span>
+<span id="cb13-4"><a href="#cb13-4"></a>lambda_1se &lt;-<span class="st"> </span>lm_results <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="st">  </span><span class="kw">select_by_one_std_err</span>(</span>
+<span id="cb13-6"><a href="#cb13-6"></a>    <span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>,</span>
+<span id="cb13-7"><a href="#cb13-7"></a>    <span class="kw">desc</span>(penalty)</span>
+<span id="cb13-8"><a href="#cb13-8"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb13-9"><a href="#cb13-9"></a><span class="st">  </span><span class="kw">select</span>(penalty)</span></code></pre></div>
 </div>
 <div id="evaluate-model-on-the-test-set" class="section level2">
 <h2>Evaluate model on the test set</h2>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>lm_wfl_final &lt;-<span class="st"> </span>lm_wfl <span class="op">%&gt;%</span></span>
-<span id="cb18-2"><a href="#cb18-2"></a><span class="st">  </span><span class="kw">finalize_workflow</span>(lambda_1se)</span></code></pre></div>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>browser_test_results &lt;-<span class="st"> </span>lm_wfl_final <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb19-2"><a href="#cb19-2"></a><span class="st">  </span><span class="kw">last_fit</span>(<span class="dt">split =</span> browser_split)</span></code></pre></div>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>ridge_results &lt;-<span class="st"> </span>browser_test_results <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb20-2"><a href="#cb20-2"></a><span class="st">  </span><span class="kw">collect_metrics</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb20-3"><a href="#cb20-3"></a><span class="st">  </span><span class="kw">filter</span>(.metric <span class="op">==</span><span class="st"> &quot;rmse&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb20-4"><a href="#cb20-4"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">method =</span> <span class="st">&quot;ridge&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>lm_wfl_final &lt;-<span class="st"> </span>lm_wfl <span class="op">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="st">  </span><span class="kw">finalize_workflow</span>(lambda_1se)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>browser_test_results &lt;-<span class="st"> </span>lm_wfl_final <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="st">  </span><span class="kw">last_fit</span>(<span class="dt">split =</span> browser_split)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>ridge_results &lt;-<span class="st"> </span>browser_test_results <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="st">  </span><span class="kw">collect_metrics</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="st">  </span><span class="kw">filter</span>(.metric <span class="op">==</span><span class="st"> &quot;rmse&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">method =</span> <span class="st">&quot;ridge&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="pcr" class="section level1">
@@ -1846,31 +1840,30 @@ div.tocify {
 <div id="specify-model-recipe-and-workflow-1" class="section level2">
 <h2>Specify model recipe and workflow</h2>
 <p>Specify a linear model. Note that in this case, there are no tuning parameters.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>lm_spec &lt;-<span class="st"> </span><span class="kw">linear_reg</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb21-2"><a href="#cb21-2"></a><span class="st">  </span><span class="kw">set_engine</span>(<span class="st">&quot;lm&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb21-3"><a href="#cb21-3"></a><span class="st">  </span><span class="kw">set_mode</span>(<span class="st">&quot;regression&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>lm_spec &lt;-<span class="st"> </span><span class="kw">linear_reg</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="st">  </span><span class="kw">set_engine</span>(<span class="st">&quot;lm&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="st">  </span><span class="kw">set_mode</span>(<span class="st">&quot;regression&quot;</span>)</span></code></pre></div>
 <p>Note how the number of PCs is determined inside the recipe object.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>browser_rec &lt;-<span class="st"> </span><span class="kw">recipe</span>(log_spend <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> browser_train) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb22-2"><a href="#cb22-2"></a><span class="st">  </span><span class="kw">step_center</span>(<span class="kw">all_predictors</span>()) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb22-3"><a href="#cb22-3"></a><span class="st">  </span><span class="kw">step_scale</span>(<span class="kw">all_predictors</span>()) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb22-4"><a href="#cb22-4"></a><span class="st">  </span><span class="kw">step_zv</span>(<span class="kw">all_predictors</span>()) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb22-5"><a href="#cb22-5"></a><span class="st">  </span><span class="kw">step_pca</span>(<span class="kw">all_predictors</span>(), <span class="dt">num_comp =</span> <span class="kw">tune</span>())</span></code></pre></div>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>lm_wfl &lt;-<span class="st"> </span><span class="kw">workflow</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb23-2"><a href="#cb23-2"></a><span class="st">  </span><span class="kw">add_recipe</span>(browser_rec) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb23-3"><a href="#cb23-3"></a><span class="st">  </span><span class="kw">add_model</span>(lm_spec)</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>browser_rec &lt;-<span class="st"> </span><span class="kw">recipe</span>(log_spend <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> browser_train) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="st">  </span><span class="kw">step_center</span>(<span class="kw">all_predictors</span>()) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="st">  </span><span class="kw">step_scale</span>(<span class="kw">all_predictors</span>()) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb18-4"><a href="#cb18-4"></a><span class="st">  </span><span class="kw">step_zv</span>(<span class="kw">all_predictors</span>()) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb18-5"><a href="#cb18-5"></a><span class="st">  </span><span class="kw">step_pca</span>(<span class="kw">all_predictors</span>(), <span class="dt">num_comp =</span> <span class="kw">tune</span>())</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>lm_wfl &lt;-<span class="st"> </span><span class="kw">workflow</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="st">  </span><span class="kw">add_recipe</span>(browser_rec) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="st">  </span><span class="kw">add_model</span>(lm_spec)</span></code></pre></div>
 </div>
 <div id="tune-hyperparameter-1" class="section level2">
 <h2>Tune hyperparameter</h2>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>num_comp_grid &lt;-<span class="st"> </span><span class="kw">expand_grid</span>(<span class="dt">num_comp =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>lm_results &lt;-<span class="st"> </span>lm_wfl <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb25-2"><a href="#cb25-2"></a><span class="st">  </span><span class="kw">tune_grid</span>(</span>
-<span id="cb25-3"><a href="#cb25-3"></a>    <span class="dt">resamples =</span> browser_folds,</span>
-<span id="cb25-4"><a href="#cb25-4"></a>    <span class="dt">grid =</span> num_comp_grid</span>
-<span id="cb25-5"><a href="#cb25-5"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>num_comp_grid &lt;-<span class="st"> </span><span class="kw">expand_grid</span>(<span class="dt">num_comp =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>lm_results &lt;-<span class="st"> </span>lm_wfl <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="st">  </span><span class="kw">tune_grid</span>(</span>
+<span id="cb21-3"><a href="#cb21-3"></a>    <span class="dt">resamples =</span> browser_folds,</span>
+<span id="cb21-4"><a href="#cb21-4"></a>    <span class="dt">grid =</span> num_comp_grid</span>
+<span id="cb21-5"><a href="#cb21-5"></a>  )</span></code></pre></div>
 <p>show best results</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>lm_results <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb26-2"><a href="#cb26-2"></a><span class="st">  </span><span class="kw">show_best</span>(<span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>, <span class="dt">maximize =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
-<pre><code>## Warning: The `maximize` argument is no longer needed. This value was ignored.</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>lm_results <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="st">  </span><span class="kw">show_best</span>(<span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 5 x 6
 ##   num_comp .metric .estimator  mean     n std_err
 ##      &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
@@ -1883,65 +1876,59 @@ div.tocify {
 <div id="set-best-number-of-components" class="section level2">
 <h2>Set best number of components</h2>
 <p>Two options: <code>num_comp</code> that minimizes RMSE, and the 1 standard error rule of thumb:</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>num_comp_min &lt;-<span class="st"> </span>lm_results <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb29-2"><a href="#cb29-2"></a><span class="st">  </span><span class="kw">select_best</span>(</span>
-<span id="cb29-3"><a href="#cb29-3"></a>    <span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>,</span>
-<span id="cb29-4"><a href="#cb29-4"></a>    <span class="dt">maximize =</span> <span class="ot">FALSE</span></span>
-<span id="cb29-5"><a href="#cb29-5"></a>  )</span></code></pre></div>
-<pre><code>## Warning: The `maximize` argument is no longer needed. This value was ignored.</code></pre>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>num_comp_1se &lt;-<span class="st"> </span>lm_results <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb31-2"><a href="#cb31-2"></a><span class="st">  </span><span class="kw">select_by_one_std_err</span>(</span>
-<span id="cb31-3"><a href="#cb31-3"></a>    <span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>,</span>
-<span id="cb31-4"><a href="#cb31-4"></a>    <span class="dt">maximize =</span> <span class="ot">FALSE</span>,</span>
-<span id="cb31-5"><a href="#cb31-5"></a>    <span class="kw">desc</span>(num_comp)</span>
-<span id="cb31-6"><a href="#cb31-6"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb31-7"><a href="#cb31-7"></a><span class="st">  </span><span class="kw">select</span>(num_comp)</span></code></pre></div>
-<pre><code>## Warning: The `maximize` argument is no longer needed. This value was ignored.</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>num_comp_min &lt;-<span class="st"> </span>lm_results <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="st">  </span><span class="kw">select_best</span>(<span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>)</span>
+<span id="cb24-3"><a href="#cb24-3"></a></span>
+<span id="cb24-4"><a href="#cb24-4"></a>num_comp_1se &lt;-<span class="st"> </span>lm_results <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="st">  </span><span class="kw">select_by_one_std_err</span>(</span>
+<span id="cb24-6"><a href="#cb24-6"></a>    <span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>,</span>
+<span id="cb24-7"><a href="#cb24-7"></a>    <span class="kw">desc</span>(num_comp)</span>
+<span id="cb24-8"><a href="#cb24-8"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb24-9"><a href="#cb24-9"></a><span class="st">  </span><span class="kw">select</span>(num_comp)</span></code></pre></div>
 </div>
 <div id="evaluate-model-on-the-test-set-1" class="section level2">
 <h2>Evaluate model on the test set</h2>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>lm_wfl_final &lt;-<span class="st"> </span>lm_wfl <span class="op">%&gt;%</span></span>
-<span id="cb33-2"><a href="#cb33-2"></a><span class="st">  </span><span class="kw">finalize_workflow</span>(num_comp_1se)</span></code></pre></div>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>browser_test_results &lt;-<span class="st"> </span>lm_wfl_final <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb34-2"><a href="#cb34-2"></a><span class="st">  </span><span class="kw">last_fit</span>(<span class="dt">split =</span> browser_split)</span></code></pre></div>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>pcr_results &lt;-<span class="st"> </span>browser_test_results <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb35-2"><a href="#cb35-2"></a><span class="st">  </span><span class="kw">collect_metrics</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb35-3"><a href="#cb35-3"></a><span class="st">  </span><span class="kw">filter</span>(.metric <span class="op">==</span><span class="st"> &quot;rmse&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb35-4"><a href="#cb35-4"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">method =</span> <span class="st">&quot;pcr&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>lm_wfl_final &lt;-<span class="st"> </span>lm_wfl <span class="op">%&gt;%</span></span>
+<span id="cb25-2"><a href="#cb25-2"></a><span class="st">  </span><span class="kw">finalize_workflow</span>(num_comp_1se)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>browser_test_results &lt;-<span class="st"> </span>lm_wfl_final <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb26-2"><a href="#cb26-2"></a><span class="st">  </span><span class="kw">last_fit</span>(<span class="dt">split =</span> browser_split)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>pcr_results &lt;-<span class="st"> </span>browser_test_results <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb27-2"><a href="#cb27-2"></a><span class="st">  </span><span class="kw">collect_metrics</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb27-3"><a href="#cb27-3"></a><span class="st">  </span><span class="kw">filter</span>(.metric <span class="op">==</span><span class="st"> &quot;rmse&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb27-4"><a href="#cb27-4"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">method =</span> <span class="st">&quot;pcr&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="pls" class="section level1">
 <h1>PLS</h1>
 <p>To run tidymodels’ <code>plsmod</code> we’ll need to make sure we have installed the <code>{mixOmics}</code> package.</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)</span>
-<span id="cb36-2"><a href="#cb36-2"></a>BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;mixOmics&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)</span>
+<span id="cb28-2"><a href="#cb28-2"></a>BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;mixOmics&quot;</span>)</span></code></pre></div>
 <div id="specify-model-recipe-and-workflow-2" class="section level2">
 <h2>Specify model recipe and workflow</h2>
 <p>Specify <code>plsmod</code></p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>pls_spec &lt;-<span class="st"> </span><span class="kw">pls</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb37-2"><a href="#cb37-2"></a><span class="st">  </span><span class="kw">set_args</span>(<span class="dt">num_comp =</span> <span class="kw">tune</span>()) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb37-3"><a href="#cb37-3"></a><span class="st">  </span><span class="kw">set_engine</span>(<span class="st">&quot;mixOmics&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb37-4"><a href="#cb37-4"></a><span class="st">  </span><span class="kw">set_mode</span>(<span class="st">&quot;regression&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>browser_rec &lt;-<span class="st"> </span><span class="kw">recipe</span>(log_spend <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> browser_train) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb38-2"><a href="#cb38-2"></a><span class="st">  </span><span class="kw">step_center</span>(<span class="kw">all_predictors</span>()) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb38-3"><a href="#cb38-3"></a><span class="st">  </span><span class="kw">step_scale</span>(<span class="kw">all_predictors</span>()) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb38-4"><a href="#cb38-4"></a><span class="st">  </span><span class="kw">step_zv</span>(<span class="kw">all_predictors</span>())</span></code></pre></div>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a>pls_wfl &lt;-<span class="st"> </span><span class="kw">workflow</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb39-2"><a href="#cb39-2"></a><span class="st">  </span><span class="kw">add_recipe</span>(browser_rec) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb39-3"><a href="#cb39-3"></a><span class="st">  </span><span class="kw">add_model</span>(pls_spec)</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>pls_spec &lt;-<span class="st"> </span><span class="kw">pls</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb29-2"><a href="#cb29-2"></a><span class="st">  </span><span class="kw">set_args</span>(<span class="dt">num_comp =</span> <span class="kw">tune</span>()) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb29-3"><a href="#cb29-3"></a><span class="st">  </span><span class="kw">set_engine</span>(<span class="st">&quot;mixOmics&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb29-4"><a href="#cb29-4"></a><span class="st">  </span><span class="kw">set_mode</span>(<span class="st">&quot;regression&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a>browser_rec &lt;-<span class="st"> </span><span class="kw">recipe</span>(log_spend <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> browser_train) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-2"><a href="#cb30-2"></a><span class="st">  </span><span class="kw">step_center</span>(<span class="kw">all_predictors</span>()) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-3"><a href="#cb30-3"></a><span class="st">  </span><span class="kw">step_scale</span>(<span class="kw">all_predictors</span>()) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb30-4"><a href="#cb30-4"></a><span class="st">  </span><span class="kw">step_zv</span>(<span class="kw">all_predictors</span>())</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>pls_wfl &lt;-<span class="st"> </span><span class="kw">workflow</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="st">  </span><span class="kw">add_recipe</span>(browser_rec) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb31-3"><a href="#cb31-3"></a><span class="st">  </span><span class="kw">add_model</span>(pls_spec)</span></code></pre></div>
 </div>
 <div id="tune-hyperparameter-2" class="section level2">
 <h2>Tune hyperparameter</h2>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a>num_comp_grid &lt;-<span class="st"> </span><span class="kw">expand_grid</span>(<span class="dt">num_comp =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a>pls_results &lt;-<span class="st"> </span>pls_wfl <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb41-2"><a href="#cb41-2"></a><span class="st">  </span><span class="kw">tune_grid</span>(</span>
-<span id="cb41-3"><a href="#cb41-3"></a>    <span class="dt">resamples =</span> browser_folds,</span>
-<span id="cb41-4"><a href="#cb41-4"></a>    <span class="dt">grid =</span> num_comp_grid</span>
-<span id="cb41-5"><a href="#cb41-5"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>num_comp_grid &lt;-<span class="st"> </span><span class="kw">expand_grid</span>(<span class="dt">num_comp =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>pls_results &lt;-<span class="st"> </span>pls_wfl <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb33-2"><a href="#cb33-2"></a><span class="st">  </span><span class="kw">tune_grid</span>(</span>
+<span id="cb33-3"><a href="#cb33-3"></a>    <span class="dt">resamples =</span> browser_folds,</span>
+<span id="cb33-4"><a href="#cb33-4"></a>    <span class="dt">grid =</span> num_comp_grid</span>
+<span id="cb33-5"><a href="#cb33-5"></a>  )</span></code></pre></div>
 <p>show best results</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1"></a>pls_results <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb42-2"><a href="#cb42-2"></a><span class="st">  </span><span class="kw">show_best</span>(<span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>, <span class="dt">maximize =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
-<pre><code>## Warning: The `maximize` argument is no longer needed. This value was ignored.</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>pls_results <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb34-2"><a href="#cb34-2"></a><span class="st">  </span><span class="kw">show_best</span>(<span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 5 x 6
 ##   num_comp .metric .estimator  mean     n std_err
 ##      &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
@@ -1954,43 +1941,41 @@ div.tocify {
 <div id="set-best-number-of-components-1" class="section level2">
 <h2>Set best number of components</h2>
 <p>Two options: <code>num_comp</code> that minimizes RMSE, and the 1 standard error rule of thumb:</p>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a>num_comp_min &lt;-<span class="st"> </span>pls_results <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb45-2"><a href="#cb45-2"></a><span class="st">  </span><span class="kw">select_best</span>(</span>
-<span id="cb45-3"><a href="#cb45-3"></a>    <span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>,</span>
-<span id="cb45-4"><a href="#cb45-4"></a>    <span class="dt">maximize =</span> <span class="ot">FALSE</span></span>
-<span id="cb45-5"><a href="#cb45-5"></a>  )</span></code></pre></div>
-<pre><code>## Warning: The `maximize` argument is no longer needed. This value was ignored.</code></pre>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a>num_comp_1se &lt;-<span class="st"> </span>pls_results <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb47-2"><a href="#cb47-2"></a><span class="st">  </span><span class="kw">select_by_one_std_err</span>(</span>
-<span id="cb47-3"><a href="#cb47-3"></a>    <span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>,</span>
-<span id="cb47-4"><a href="#cb47-4"></a>    <span class="dt">maximize =</span> <span class="ot">FALSE</span>,</span>
-<span id="cb47-5"><a href="#cb47-5"></a>    <span class="kw">desc</span>(num_comp)</span>
-<span id="cb47-6"><a href="#cb47-6"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb47-7"><a href="#cb47-7"></a><span class="st">  </span><span class="kw">select</span>(num_comp)</span></code></pre></div>
-<pre><code>## Warning: The `maximize` argument is no longer needed. This value was ignored.</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a>num_comp_min &lt;-<span class="st"> </span>pls_results <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb36-2"><a href="#cb36-2"></a><span class="st">  </span><span class="kw">select_best</span>(<span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>)</span>
+<span id="cb36-3"><a href="#cb36-3"></a></span>
+<span id="cb36-4"><a href="#cb36-4"></a>num_comp_1se &lt;-<span class="st"> </span>pls_results <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb36-5"><a href="#cb36-5"></a><span class="st">  </span><span class="kw">select_by_one_std_err</span>(</span>
+<span id="cb36-6"><a href="#cb36-6"></a>    <span class="dt">metric =</span> <span class="st">&quot;rmse&quot;</span>,</span>
+<span id="cb36-7"><a href="#cb36-7"></a>    <span class="kw">desc</span>(num_comp)</span>
+<span id="cb36-8"><a href="#cb36-8"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb36-9"><a href="#cb36-9"></a><span class="st">  </span><span class="kw">select</span>(num_comp)</span></code></pre></div>
 </div>
 <div id="evaluate-model-on-the-test-set-2" class="section level2">
 <h2>Evaluate model on the test set</h2>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a>pls_wfl_final &lt;-<span class="st"> </span>pls_wfl <span class="op">%&gt;%</span></span>
-<span id="cb49-2"><a href="#cb49-2"></a><span class="st">  </span><span class="kw">finalize_workflow</span>(num_comp_1se)</span></code></pre></div>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1"></a>browser_test_results &lt;-<span class="st"> </span>pls_wfl_final <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb50-2"><a href="#cb50-2"></a><span class="st">  </span><span class="kw">last_fit</span>(<span class="dt">split =</span> browser_split)</span></code></pre></div>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a>pls_results &lt;-<span class="st"> </span>browser_test_results <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb51-2"><a href="#cb51-2"></a><span class="st">  </span><span class="kw">collect_metrics</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb51-3"><a href="#cb51-3"></a><span class="st">  </span><span class="kw">filter</span>(.metric <span class="op">==</span><span class="st"> &quot;rmse&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb51-4"><a href="#cb51-4"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">method =</span> <span class="st">&quot;pls&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>pls_wfl_final &lt;-<span class="st"> </span>pls_wfl <span class="op">%&gt;%</span></span>
+<span id="cb37-2"><a href="#cb37-2"></a><span class="st">  </span><span class="kw">finalize_workflow</span>(num_comp_1se)</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>browser_test_results &lt;-<span class="st"> </span>pls_wfl_final <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb38-2"><a href="#cb38-2"></a><span class="st">  </span><span class="kw">last_fit</span>(<span class="dt">split =</span> browser_split)</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a>pls_results &lt;-<span class="st"> </span>browser_test_results <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb39-2"><a href="#cb39-2"></a><span class="st">  </span><span class="kw">collect_metrics</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb39-3"><a href="#cb39-3"></a><span class="st">  </span><span class="kw">filter</span>(.metric <span class="op">==</span><span class="st"> &quot;rmse&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb39-4"><a href="#cb39-4"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">method =</span> <span class="st">&quot;pls&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="summary" class="section level1">
 <h1>Summary</h1>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1"></a><span class="kw">bind_rows</span>(ridge_results,</span>
-<span id="cb52-2"><a href="#cb52-2"></a>          pcr_results,</span>
-<span id="cb52-3"><a href="#cb52-3"></a>          pls_results)</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a><span class="kw">bind_rows</span>(</span>
+<span id="cb40-2"><a href="#cb40-2"></a>  ridge_results,</span>
+<span id="cb40-3"><a href="#cb40-3"></a>  pcr_results,</span>
+<span id="cb40-4"><a href="#cb40-4"></a>  pls_results</span>
+<span id="cb40-5"><a href="#cb40-5"></a>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb40-6"><a href="#cb40-6"></a><span class="st">  </span><span class="kw">arrange</span>(.estimate)</span></code></pre></div>
 <pre><code>## # A tibble: 3 x 4
 ##   .metric .estimator .estimate method
 ##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; 
-## 1 rmse    standard        2.56 ridge 
-## 2 rmse    standard        1.74 pcr   
+## 1 rmse    standard        1.74 pcr   
+## 2 rmse    standard        2.56 ridge 
 ## 3 rmse    standard        2.95 pls</code></pre>
 </div>
 
