@@ -14,12 +14,14 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(eval = TRUE,
-                      echo = TRUE,
-                      warning = FALSE,
-                      message = FALSE,
-                      comment = NA,
-                      dpi = 300)
+knitr::opts_chunk$set(
+  eval = TRUE,
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  comment = NA,
+  dpi = 300
+)
 ```
 
 # Load packages
@@ -123,9 +125,6 @@ plot(cv_lasso, xvar = "lambda", label = TRUE)
 cv_ridge <- cv.glmnet(X_dep, Y_dep, alpha = 0)
 plot(cv_ridge, xvar = "lambda", label = TRUE)
 ```
-
-
-
 
 # Thresholding
 
