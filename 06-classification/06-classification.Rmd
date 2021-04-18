@@ -469,7 +469,7 @@ The `augment()` function (also from `{broom}`) augments the original dataframe w
 ```{r}
 covid_pred <- 
   logit_model %>% 
-  augment()
+  augment(type.predict = "response")
 
 covid_pred
 ```
@@ -555,7 +555,7 @@ $$\text{false positive rate} = 1 - \text{sensitivity}$$
 # Our model's confusion matrix
 
 .pull-left[
-The function `cnf_mat()` from the `{yardstick}` package provides easy access to a model's confusion matrix and the implied performance statistics.
+The function `conf_mat()` from the `{yardstick}` package provides easy access to a model's confusion matrix and the implied performance statistics.
 ```{r}
 covid_conf_mat <- 
   covid_pred %>% 
