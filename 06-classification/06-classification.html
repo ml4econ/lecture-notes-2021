@@ -20,7 +20,7 @@ class: center, middle, inverse, title-slide
 # 06 - Classification
 ## ml4econ, HUJI 2021
 ### Itamar Caspi
-### April 18, 2021 (updated: 2021-04-17)
+### April 18, 2021 (updated: 2021-04-18)
 
 ---
 
@@ -383,6 +383,12 @@ The relationship between deviance and likelihood is given by
 The constant wrapps terms that relate to the likelihood of the "perfect" model and we can mostly ignore it.
 
 ---
+# Illustration of the Deviance
+
+&lt;img src="figs/deviance.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+[Source](https://bookdown.org/egarpor/PM-UC3M/glm-deviance.html)
+---
 # Deviance and estimation
 
 In estimation, we want to make deviance as _small_ as possible.
@@ -423,7 +429,7 @@ covid %&gt;%
 ```
 ]
 .pull-right[
-![](06-classification_files/figure-html/unnamed-chunk-8-1..svg)&lt;!-- --&gt;
+![](06-classification_files/figure-html/unnamed-chunk-9-1..svg)&lt;!-- --&gt;
 ]
 
 ---
@@ -447,7 +453,7 @@ covid %&gt;%
 ```
 ]
 .pull-right[
-![](06-classification_files/figure-html/unnamed-chunk-9-1..svg)&lt;!-- --&gt;
+![](06-classification_files/figure-html/unnamed-chunk-10-1..svg)&lt;!-- --&gt;
 ]
 
 ---
@@ -560,7 +566,7 @@ covid_pred %&gt;%
 ```
 ]
 .pull-right[
-![](06-classification_files/figure-html/unnamed-chunk-15-1..svg)&lt;!-- --&gt;
+![](06-classification_files/figure-html/unnamed-chunk-16-1..svg)&lt;!-- --&gt;
 ]
 
 ---
@@ -710,7 +716,7 @@ covid_pred %&gt;%
 Note that we've used `.fitted` instead of `.fitted_class`.
 ]
 .pull-right[
-![](06-classification_files/figure-html/unnamed-chunk-21-1..svg)&lt;!-- --&gt;
+![](06-classification_files/figure-html/unnamed-chunk-22-1..svg)&lt;!-- --&gt;
 ]
 
 ---
@@ -903,7 +909,7 @@ fgl_long %&gt;%
 Some of the features are clear discriminators, e.g., `Ba` is barely present in all glass types but `Head`.
 ]
 .pull-right[
-![](06-classification_files/figure-html/unnamed-chunk-28-1..svg)&lt;!-- --&gt;
+![](06-classification_files/figure-html/unnamed-chunk-29-1..svg)&lt;!-- --&gt;
 ]
 
 ---
@@ -973,7 +979,7 @@ plot(fit)
 ```
 ]
 .pull-right[
-![](06-classification_files/figure-html/unnamed-chunk-32-1..svg)&lt;!-- --&gt;
+![](06-classification_files/figure-html/unnamed-chunk-33-1..svg)&lt;!-- --&gt;
 ]
 
 
@@ -1069,7 +1075,7 @@ where `WinF.1:Head.1` are the model's fitted probabilities.
 See how the model fails to distinguish between `Veh` and the others, whereas classifying as `Tabl` is almost perfect.
 ]
 .pull-right[
-![](06-classification_files/figure-html/unnamed-chunk-37-1..svg)&lt;!-- --&gt;
+![](06-classification_files/figure-html/unnamed-chunk-38-1..svg)&lt;!-- --&gt;
 ]
 
 ---

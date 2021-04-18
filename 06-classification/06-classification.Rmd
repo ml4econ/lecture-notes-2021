@@ -353,6 +353,14 @@ $$\mathrm{Devience} = -2\times \log(\mathrm{Likelihood})+ \mathrm{Constant}$$
 The constant wrapps terms that relate to the likelihood of the "perfect" model and we can mostly ignore it.
 
 ---
+# Illustration of the Deviance
+
+```{r, echo=FALSE, fig.align='center', out.width = "50%"}
+include_graphics("figs/deviance.png")
+```
+
+[Source](https://bookdown.org/egarpor/PM-UC3M/glm-deviance.html)
+---
 # Deviance and estimation
 
 In estimation, we want to make deviance as _small_ as possible.
