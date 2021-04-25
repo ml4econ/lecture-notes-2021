@@ -86,6 +86,8 @@ The schedule below is tentative and subject to change, depending on time and cla
 [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/06-classification/06-classification.html) [(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/06-classification/06-classification.pdf)  
   6.1[Classification: A Tidymodels workflow](https://raw.githack.com/ml4econ/lecture-notes-2021/master/06-classification/06-tidymodels-workflow-covid.html)
 
+7. Trees and Forests
+[(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/07-trees-forests/07-trees-forests.html) [(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/07-trees-forests/07-trees-forests.pdf)  
 
 ### Part II: Causal Inference and ML
 

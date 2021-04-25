@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>07 - Trees and Forests</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Itamar Caspi" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+    <script src="libs/anchor-sections/anchor-sections.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style/middlebury.css" type="text/css" />
+    <link rel="stylesheet" href="style/middlebury-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# 07 - Trees and Forests
+## ml4econ, HUJI 2021
+### Itamar Caspi
+### April 25, 2021 (updated: 2021-04-25)
+
+---
+
+
+
+
+
+# Packages and setup
+
+Use the [{`pacman`}](https://cran.r-project.org/web/packages/pacman/vignettes/Introduction_to_pacman.html) package that automatically loads and installs packages if necessary:
+
+
+```r
+if (!require("pacman")) install.packages("pacman")
+
+pacman::p_load(
+  tidyverse,   # for data wrangling and visualization
+  broom,       # for tidy model output
+  rpart,       # for estimating CART
+  rpart.plot,  # for plotting rpart objects
+  ranger,      # for estimating random forests
+  vip,         # for variable importance plots
+  knitr,       # for displaying nice tables
+  here         # for referencing folders and files
+)
+
+# remotes::install_github("grantmcdermott/parttree")
+library(parttree)
+```
+
+Set a theme for `ggplot` (Relevant only for the presentation), and set a seed for replication
+
+```r
+theme_set(theme_grey(20))
+set.seed(1203)
+```
+
+
+---
+# Outline
+
+ - [Stratification](#strat) 
+ 
+ - [Regression Trees](#reg)
+ 
+ - [Classification Trees](#class)
+ 
+ - [Random Forests](#forest)
+ 
+ - [Other Ensemble Methods](#ensemble)
+ 
+
+ 
+---
+# Types of desicion tree applications
+
+- Decision trees can be applied to both regression and classification tasks.
+
+- We first consider regression problems using the Boston dataset, and then move on to classification using the Titanic dataset.
+
+
+---
+class: title-slide-section-blue, center, middle
+name: strat
+
+# Stratification
+
+---
+# Boston housing (again)
+
+Load the data
+
+```r
+boston &lt;- 
+  here("04-ml-workflow/data","BostonHousing.csv") %&gt;% 
+  read_csv()
+```
+
+```
+## Parsed with column specification:
+## cols(
+##   crim = col_double(),
+##   zn = col_double(),
+##   indus = col_double(),
+##   chas = col_double(),
+##   nox = col_double(),
+##   rm = col_double(),
+##   age = col_double(),
+##   dis = col_double(),
+##   rad = col_double(),
+##   tax = col_double(),
+##   ptratio = col_double(),
+##   b = col_double(),
+##   lstat = col_double(),
+##   medv = col_double()
+## )
+```
+
+---
+# Recall the nonlinear association between `lstat` and `medv`
+
+.pull-left[
+
+```r
+boston %&gt;% 
+  ggplot(aes(lstat, medv)) +
+  geom_point()
+```
+]
+.pull-right[
+![](07-trees-forests_files/figure-html/unnamed-chunk-1-1..svg)&lt;!-- --&gt;
+]
+
+---
+# Two-way split of `lstat`
+
+.pull-left[
+Let `\(D_i\)` denote an arbitrary two-way "split" dummy variable such that:
+`$$D_{i}=\left\{\begin{array}{ll}
+1 &amp; \text{ if } lstat_i &gt; 15\\
+0 &amp; \text{ otherwise }, 
+\end{array}\right.$$`
+
+On the left, the blue step-function is the fitted value from running
+`$$medv_i = \beta_0 + \beta_1 D_i + \varepsilon_i$$`
+Note that the prediction is given by the average of `\(medv_i\)` within each "region".
+
+
+]
+.pull-right[
+![](07-trees-forests_files/figure-html/unnamed-chunk-2-1..svg)&lt;!-- --&gt;
+]
+
+
+---
+# Three-way split
+
+.pull-left[
+Now, let's try a three-way split:
+`$$D_{1i}=\left\{\begin{array}{ll}
+1 &amp; \text{ if } lstat_i &gt; 25\\
+0 &amp; \text{ otherwise}, 
+\end{array}\right.\quad
+D_{1i}=\left\{\begin{array}{ll}
+1 &amp; \text{ if } lstat_i &lt; 5\\
+0 &amp; \text{ otherwise }, 
+\end{array}\right.$$`
+
+```r
+boston %&gt;% 
+  ggplot(aes(lstat, medv)) + 
+  geom_point() +
+  geom_smooth(
+    method = lm,
+    se = FALSE,
+    formula = y ~ (x&gt;25) + (x&lt;=25 &amp; x&gt;=15) + (x&lt;15) -1
+  )
+```
+Again, the prediction is given by the average of `\(medv_i\)` within each "region".
+]
+.pull-right[
+![](07-trees-forests_files/figure-html/unnamed-chunk-3-1..svg)&lt;!-- --&gt;
+]
+---
+# Four-way split
+.pull-left[
+You get the point
+
+```r
+boston %&gt;% 
+  ggplot(aes(lstat, medv)) + 
+  geom_point() +
+  geom_smooth(
+    method = lm,
+    se = FALSE,
+    formula = y ~ (x&gt;25) + (x&lt;=25 &amp; x&gt;=15) + (x&lt;15 &amp; x&gt;=5) + (x&lt;5) -1
+  )
+```
+- The more splits we have, the better the fit. (What about prediction?)
+]
+.pull-right[
+![](07-trees-forests_files/figure-html/unnamed-chunk-4-1..svg)&lt;!-- --&gt;
+]
+
+---
+# Issues
+
+In general using splits involve three main issues:
+
+  1. Where to split?
+  2. How many splits?
+  3. How to predict within each node?
+  
+The answers to the these questions are related to the decision trees framework.
+
+
+---
+class: title-slide-section-blue, center, middle
+name: reg
+
+# Regression Trees
+
+---
+# Classification and regression trees (CART)
+
+Basic idea (Breiman et al., 1984):
+
+1. Split the features space `\(x_{1}, x_{2}, \ldots, x_{p}\)` - into `\(M\)` distinct and non-overlapping regions (rectangles), `\(R_{1}, R_{2}, \ldots, R_{M}\)`.
+
+2. For every observation that falls into the region `\(R_{j},\)` we make the same prediction (regression or classification). For example, for a continuous `\(y\)`,
+`$$\hat{y}_{m}=\frac{1}{N_{m}} \sum_{x_{i} \in R_{m}} y_{i}$$`
+where `\(y_m\)` is a test observation that belongs to region `\(R_m\)`.
+
+
+---
+# How to split?
+
+- Going over every possible partitions of the feature space is infeasible. (Why?)
+
+- Instead, the CART algorithm follows a __greedy__ approach.
+
+- Starting with all of the data, consider a splitting variable `\(j\)` and split point `\(s\)`, and define the pair of half-planes
+`$$R_{1}(j, s)=\left\{x | x_{j} \leq s\right\}, \qquad R_{2}(j, s)=\left\{x | x_{j}&gt;s\right\}$$`
+- find the predictor `\(j^*\)` and split `\(s^*\)` that partitions the data into two regions `\(R_{1}(j^*,s^*)\)` and `\(R_{2}(j^*,s^*)\)` such that the overall sums of squares error are minimized:
+`$$\mathrm{RSS}=\sum_{i \in R_{1}(j^*,s^*)}\left(y_{i}-\bar{y}_{1}\right)^{2}+\sum_{i \in R_{2}(j^*,s^*)}\left(y_{i}-\bar{y}_{2}\right)^{2}$$`
+where `\(\bar{y}_{1}\)` and `\(\bar{y}_{2}\)` are the averages of the training set outcomes within each group.
+
+---
+# The CART Algorithm 
+
+For each node, beginning with the root containing the full sample:
+
+1. Determine the single `\(RSS\)` minimizing split for this node.
+
+2. Split this parent node into the left and right node.
+
+3. Apply steps 1 and 2 to each child node.
+
+4. Continue until you reach a leaf node of some prespecified minimum size (e.g., stop splitting when there are fewer than, say, 10 observations in each leaf).
+
+
+---
+# Feature space partitioning
+
+.pull-left[
+&lt;img src="figs/partitions.png" width="90%" style="display: block; margin: auto;" /&gt;
+[Source](): ESL, pp. 308.
+]
+.pull-right[
+
+- __Top right:__ partition of a 2-D feature space by CART.
+
+- __Top left:__ general partition that cannot be obtained from CART.
+
+- __Bottom left:__ the tree corresponding to the partition in the top right.
+
+- __Bottom right:__ prediction surface.
+]   
+
+
+---
+# How large should we grow the tree?
+
+- Large tree - overfit. Small tree - high variance.
+
+- The tree's level of _expressiveness_ is captured by its size (the number of terminal nodes).
+
+- Common practice: Build a large tree and __prune__ the tree backwards using _cost-complexity pruning_.
+
+
+---
+# Cost-complexity pruning
+
+The cost complexity criterion associated with a tree `\(T\)` is given by
+
+`$$\mathrm{RSS}_{cp}(T)=\mathrm{RSS}(T)+cp|T|$$`
+where
+  - `\(\mathrm{RSS}\)` is the sum of squared error for tree `\(T\)`.
+  - `\(|T|\)` is the number of terminal nodes in tree `\(T\)`.
+  - `\(cp\)` is the complexity parameter.
+  
+Hence, for CART, the penalty is a function of the number of terminal nodes.
+
+
+__NOTE:__ `\(cp\)` and `\(|T|\)` are analogous to `\(\lambda\)` and `\(\lVert\boldsymbol{\beta}\rVert_1\)` in the lasso.
+
+---
+# `\(cp\)`
+
+The complexity parameter is unit free and ranges from 0 to 1:
+
+  - When `\(cp = 0\)`, we have a fully saturated tree.
+  
+  - When `\(cp = 1\)`, there are no splits, i.e, we predict the unconditional mean.
+  
+
+---
+# Boston with `\(cp=1\)`
+
+.pull-left[
+The R implementation of the CART algorithm is called `{rpart}`. Estimating a tree is straightforward using the `rpart()` function:
+
+```r
+tree_fit &lt;- rpart(
+  medv ~ lstat,
+  data = boston,
+* control = rpart.control(cp = 1)
+)
+```
+Recall that setting `\(cp=1\)` enforces no splits.
+
+Plotting a tree is done using the `{rpart.plot}` package
+
+```r
+rpart.plot(tree_fit, cex = 2)
+```
+
+]
+.pull-right[
+![](07-trees-forests_files/figure-html/unnamed-chunk-6-1..svg)&lt;!-- --&gt;
+]
+
+---
+# Boston with `\(cp=0\)`
+
+.pull-left[
+
+```r
+tree_fit &lt;- rpart(
+  medv ~ lstat,
+  data = boston,
+* control = rpart.control(cp = 0, minsplit = 80)
+)
+rpart.plot(tree_fit, cex = 1)
+```
+Setting `\(cp=0\)` results in a saturated tree. 
+
+Note we've set the minimum split criterion to `\(80\)` just to avoid clutter (too many splits) in the figure on the right.
+]
+.pull-right[
+![](07-trees-forests_files/figure-html/unnamed-chunk-7-1..svg)&lt;!-- --&gt;
+]
+
+---
+# Tuning `\(cp\)`
+
+Breiman et al. (1984) suggest using a cross-validation approach to find the optimal&lt;sup&gt;*&lt;/sup&gt; `\(cp\)`:
+
+- For any value of the `\(cp\)` there is a unique, subtree `\(T_{cp}\)` that minimizes cost complexity `\(\mathrm{RSS}_{cp}(T)\)`.
+
+- To find the best subtree, we evaluate the data across a sequence of `\(cp\)` values. This process generates a (finite) sequence of subtrees which contains `\(T_{cp}\)`. 
+
+- Estimation of `\(cp\)` is achieved by cross-validation: we choose the value `\(\hat{cp}\)` that minimizes the cross-validated `\(RSS\)`. Our final tree is `\(T_{\hat{cp}}\)`
+
+.footnote[
+[*] Breiman et al. (1984) also propose using the 1se heuristic, i.e., find the smallest tree that is within one standard error of the tree with smallest absolute error.
+]
+
+
+---
+# Boston tree cross validation
+
+.pull-left[
+The `plotcp()` function from the `{rpart}` package gives a visual representation of the cross-validation results in an `rpart` object:
+
+```r
+tree_fit &lt;- rpart(
+  medv ~ lstat,
+  data = boston
+)
+*plotcp(tree_fit)
+```
+`\(cp=0.029\)` is the 1se optimal `\(cp\)`.
+]
+.pull-right[
+![](07-trees-forests_files/figure-html/unnamed-chunk-8-1..svg)&lt;!-- --&gt;
+]
+
+---
+# Boston pruned tree
+
+.pull-left[
+We now proceed to pruning the tree using the `prune()` function (also from `{rpart}`), where we set `cp = 0.029`:
+
+```r
+*tree_prune &lt;- prune(tree_fit, cp = 0.029)
+```
+
+And now we can plot the pruned tree:
+
+```r
+rpart.plot(tree_prune, cex = 2)
+```
+]
+.pull-right[
+![](07-trees-forests_files/figure-html/unnamed-chunk-10-1..svg)&lt;!-- --&gt;
+]
+
+
+---
+# Trees with multiple features
+
+.pull-left[
+How would you partition the data?
+
+```r
+boston %&gt;% 
+  ggplot(aes(lstat, rm, color = medv)) +
+  scale_color_viridis_c() +
+  geom_point(size = 2, alpha = 0.8)
+```
+]
+.pull-right[
+![](07-trees-forests_files/figure-html/unnamed-chunk-11-1..svg)&lt;!-- --&gt;
+]
+
+
+---
+# `rpart` with many features
+
+.pull-left[
+
+```r
+tree_fit &lt;- rpart(
+  medv ~ lstat + rm,
+  data = boston,
+  control = rpart.control(cp = 0.15),
+  method = "anova"
+)
+rpart.plot(tree_fit, cex = 2)
+```
+For now, we will ignore the `cp = 0.15` argument.
+]
+.pull-right[
+![](07-trees-forests_files/figure-html/unnamed-chunk-12-1..svg)&lt;!-- --&gt;
+]
+
+
+---
+# Variable importance
+
+- Once a tree has been estimated, it is common practice to assess the relative importance of the features to the prediction. 
+
+- A popular measure of variable (feature) importance is the total amount that the `\(RSS\)` is decreased due to splits over a given variable (Breiman et al., 1984.)
+
+- Variables that appear higher or multiple times are more important than variable that appear lower in the tree or less frequently.
+
+
+---
+# Boston variable importance
+.pull-left[
+We now fit a tree with the entire set of features in the Boston dataset:
+
+```r
+tree_all_vars &lt;- rpart(medv ~ ., data = boston)
+```
+
+We can easily show variable importance for the fitted tree with the help of the [`{vip}`](https://cran.r-project.org/web/packages/vip/index.html) package:
+
+```r
+vip(tree_all_vars)
+```
+`rm` (the number of rooms) is clearly the most important feature in predicting `medv`.
+]
+.pull-right[
+![](07-trees-forests_files/figure-html/unnamed-chunk-14-1..svg)&lt;!-- --&gt;
+]
+
+
+---
+class: title-slide-section-blue, center, middle
+name: class
+
+# Classification Trees
+
+
+---
+# Adjustment to classification tasks: Splits
+
+- Instead of `\(RSS\)`, splits are typically based on the _Gini index_ (a.k.a _node purity_), defined by
+`$$G=\sum_{k=1}^{K} \hat{p}_{m k}\left(1-\hat{p}_{m k}\right),$$`
+a measure of total variance across the total classes (this is `rpart`'s default.)
+
+- An alternative to the Gini index is _cross-entropy_, given by
+`$$D=-\sum_{k=1}^{K} \hat{p}_{m k} \log \hat{p}_{m k}$$`
+
+---
+# Adjustment to classification: Prediction
+
+- Instead of predicting based on the average `\(y\)` in region `\(R_m\)`, prediction is based on a majority rule: each observation belongs to the most commonly occurring class of training observations in the region to which it belongs.
+
+---
+# Adjustment to classification: Variable importance
+
+- Variable importance is determined based on the amount that the Gini index/cross-entropy is decreased by splits over a given variable.
+
+---
+# Classification trees example: The Titanic
+
+.pull-left[
+_"The RMS Titanic was a British passenger liner that sank in the North Atlantic Ocean in the early morning hours of 15 April 1912, after it collided with an iceberg during its maiden voyage from Southampton to New York City. There were an estimated 2,224 passengers and crew aboard the ship, and more than 1,500 died, making it one of the deadliest commercial peacetime maritime disasters in modern history."_ .right[&amp;mdash; [Wikipedia](https://en.wikipedia.org/wiki/RMS_Titanic)]
+]
+.pull-right[
+&lt;img src="https://upload.wikimedia.org/wikipedia/commons/f/fd/RMS_Titanic_3.jpg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+# Load the data
+
+We'll replicate the results in Varian (2014) "Big data: New tricks for econometrics":
+
+```r
+titanic_raw &lt;- 
+  here("07-trees-forests/data", "titanic_varian.csv") %&gt;% 
+  read_csv()
+```
+
+
+```r
+titanic_raw %&gt;% glimpse()
+```
+
+```
+## Rows: 1,309
+## Columns: 14
+## $ pclass    &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1~
+## $ survived  &lt;dbl&gt; 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1~
+## $ name      &lt;chr&gt; "Allen, Miss. Elisabeth Walton", "Allison, Master. Hudson Trevor~
+## $ sex       &lt;chr&gt; "female", "male", "female", "male", "female", "male", "female", ~
+## $ age       &lt;dbl&gt; 29.00, 0.92, 2.00, 30.00, 25.00, 48.00, 63.00, 39.00, 53.00, 71.~
+## $ sibsp     &lt;dbl&gt; 0, 1, 1, 1, 1, 0, 1, 0, 2, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1~
+## $ parch     &lt;dbl&gt; 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1~
+## $ ticket    &lt;chr&gt; "24160", "113781", "113781", "113781", "113781", "19952", "13502~
+## $ fare      &lt;dbl&gt; 211.3375, 151.5500, 151.5500, 151.5500, 151.5500, 26.5500, 77.95~
+## $ cabin     &lt;chr&gt; "B5", "C22 C26", "C22 C26", "C22 C26", "C22 C26", "E12", "D7", "~
+## $ embarked  &lt;chr&gt; "S", "S", "S", "S", "S", "S", "S", "S", "S", "C", "C", "C", "C",~
+## $ boat      &lt;chr&gt; "2", "11", NA, NA, NA, "3", "10", NA, "D", NA, NA, "4", "9", "6"~
+## $ body      &lt;dbl&gt; NA, NA, NA, 135, NA, NA, NA, NA, NA, 22, 124, NA, NA, NA, NA, NA~
+## $ home.dest &lt;chr&gt; "St Louis, MO", "Montreal, PQ / Chesterville, ON", "Montreal, PQ~
+```
+
+
+---
+# Data details
+
+In this lecture, we will focus on a single outcome and two features:
+
+|  Variable  |  Role        |  Definition  |  Values                   |
+|:-----------|:-------------|:-------------|:--------------------------|
+|  `survived`|  Outcome     |  Survival    |  0 = No, 1 = Yes          |
+|  `age`     |  Feature     |  Age in years|                           |
+|  `pclass`  |  Feature     |  Ticket class|  1 = 1st, 2 = 2nd, 3 = 3rd|
+
+Our goal: Predict which passengers survived based on their age and status.
+
+---
+# Preprocessing
+
+For what will follow, it would be useful to remove `NA`s and define `survived` as a factor:
+
+```r
+titanic &lt;-titanic_raw %&gt;% 
+  select(survived, age, pclass) %&gt;% 
+  drop_na() %&gt;% 
+  mutate(
+    survived = as_factor(survived),
+  ) 
+
+titanic
+```
+
+```
+## # A tibble: 1,046 x 3
+##    survived   age pclass
+##    &lt;fct&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+##  1 1        29         1
+##  2 1         0.92      1
+##  3 0         2         1
+##  4 0        30         1
+##  5 0        25         1
+##  6 1        48         1
+##  7 1        63         1
+##  8 0        39         1
+##  9 1        53         1
+## 10 0        71         1
+## # ... with 1,036 more rows
+```
+
+---
+# Partition
+
+.pull-left[
+How would you stratify the data?
+
+```r
+titanic %&gt;% 
+  ggplot(aes(pclass, age, color = survived)) +
+  geom_jitter(alpha = 0.5, size = 2) 
+```
+]
+.pull-right[
+![](07-trees-forests_files/figure-html/unnamed-chunk-18-1..svg)&lt;!-- --&gt;
+]
+
+---
+# Estimate , prune, and plot the tree
+.pull-left[
+Fit the tree
+
+```r
+rpart_model &lt;- rpart(
+  survived ~ pclass + age,
+  data = titanic,
+* method = "class"
+)
+```
+Prune
+
+```r
+rpart_prune &lt;- prune(rpart_model, cp = .038)
+```
+Plot
+
+```r
+rpart.plot(rpart_prune, type=0, extra=1, cex = 2)
+```
+]
+.pull-right[
+![](07-trees-forests_files/figure-html/unnamed-chunk-21-1..svg)&lt;!-- --&gt;
+]
+
+---
+# Partitioning a 2-D feature space
+
+.pull-left[
+This is how the tree partitions the data
+
+```r
+titanic %&gt;% 
+  ggplot(aes(pclass, age, color = survived)) +
+  geom_jitter(alpha = 0.8, size = 2) +
+  geom_parttree(data = rpart_prune, aes(fill=survived), alpha = 0.1) +
+  theme_minimal()
+```
+where I've used the `geom_parttree()` function from the [`{parttree}`](https://github.com/grantmcdermott/parttree) package (in development.)
+]
+.pull-right[
+![](07-trees-forests_files/figure-html/unnamed-chunk-22-1..svg)&lt;!-- --&gt;
+]
+
+---
+# Recall: trees stratify the features space
+
+Let's generate partition dummies that correspond to our tree's partitioning:
+
+```r
+titanic_lm &lt;- 
+  titanic %&gt;% 
+  mutate(
+    survived = as.numeric(survived) - 1,
+    class_3 = if_else(pclass == 3, 1, 0),
+    class_1_or_2_age_below_16 = if_else(pclass %in% c(1,2) &amp; age &lt; 16, 1, 0),
+    class_1_age_above_16 = if_else(pclass == 1 &amp; age &gt;=16, 1, 0),
+    class_2_age_above_16 = if_else(pclass == 2 &amp; age &gt;=16, 1, 0),
+  ) %&gt;% 
+  select(survived, starts_with("class_"))
+
+titanic_lm %&gt;% glimpse()
+```
+
+```
+## Rows: 1,046
+## Columns: 5
+## $ survived                  &lt;dbl&gt; 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, ~
+## $ class_3                   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+## $ class_1_or_2_age_below_16 &lt;dbl&gt; 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+## $ class_1_age_above_16      &lt;dbl&gt; 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ~
+## $ class_2_age_above_16      &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+```
+
+---
+# Representing trees as linear regressions
+
+.pull-left[
+Now, we can estimate a linear model using our set of partition dummies and compare the results to our tree.
+
+```r
+lm(survived ~ . -1, data = titanic_lm) %&gt;%
+  tidy() %&gt;% 
+  select(term, estimate, std.error)
+```
+
+```
+## # A tibble: 4 x 3
+##   term                      estimate std.error
+##   &lt;chr&gt;                        &lt;dbl&gt;     &lt;dbl&gt;
+## 1 class_3                      0.261    0.0204
+## 2 class_1_or_2_age_below_16    0.944    0.0762
+## 3 class_1_age_above_16         0.630    0.0275
+## 4 class_2_age_above_16         0.378    0.0299
+```
+]
+.pull-right[
+![](07-trees-forests_files/figure-html/unnamed-chunk-25-1..svg)&lt;!-- --&gt;
+]
+
+
+---
+class: title-slide-section-blue, center, middle
+name: forest
+
+# Random Forests
+
+
+---
+# Trees: pros and cons
+
+Pros:
+
+- Intuitive (more than regression?) 
+
+- Interpretable
+
+- Nonparametric (no bookkeeping)
+
+Cons:
+
+- Overfit
+
+- Poor predictive performance (typically)
+
+---
+# Random forests: Basic Idea
+
+- Breiman (2001): Instead of using a single tree, average the predictions of several trees, fitted to bootstrapped training samples + use a subset of the feature space for each split.
+
+- Intuition: Reduce variance (overfit) by averaging multiple noisy and weakly-correlated predictions.
+
+---
+# The random forests algorithm
+
+Suppose `\(B\)` is the number of bootstrapped samples, i.e., the number of trees in the forest (typically thousands.)
+
+For `\(b=1 \ldots B\)` :
+
+  1. Sample with-replacement `\(n\)` observations from the data.
+  
+  2. Grow a tree `\(T_{b}-\)`, where for each split, draw a subset of `\(m\)` features (a common choice is `\(m \approx \sqrt{p}\)`, where `\(p\)` is the dimension of `\(x\)`.)
+  
+  3. Use typical tree model stopping criteria to determine when a
+tree is complete (but do not prune.)
+
+
+---
+# Making predictions
+
+Regression forests:
+
+- For each observation, predict based on the average of `\(B\)` predictions, i.e., 
+
+`$$\hat{f}_{\mathrm{RF}}(x)=\frac{1}{B} \sum_{b=1}^{B} \hat{f}^{* b}(x),$$`
+where `\(\hat{f}^{* b}(x)\)` is the prediction based on sample `\(b\)`.
+
+Classification forests:
+
+- For each test observation, record the class predicted by each of the `\(B\)` trees, and take a majority vote.
+
+
+---
+# Out-of-bag error estimation
+
+- Because pf bootstrap, on average, each bagged tree makes use of
+around two-thirds of the observations.
+
+- Thus, we can use the remaining on-third observations as "out-of-bag" (OOB) validation set.
+
+- This will yield, on average, `\(B\)` predictions for the `\(i^{\text{th}}\)` observation that belong to the OOB set.
+
+
+---
+# Fitting forests using `ranger`
+
+Fitting forests in R is easy with the [`{ranger}`](https://cran.r-project.org/web/packages/ranger/ranger.pdf) package, which uses the same syntax as `{rpart}`.
+
+
+```r
+rf_fit &lt;- ranger(
+  formula = medv ~ .,
+  data = boston,
+  mtry = 3,
+  num.trees = 1000,
+  importance = "impurity"  
+)
+```
+where
+
+- `num.trees` is the argument for `\(B\)`, the number of trees.
+- `mtry` is the argument for `\(m\)`, the number of features drawn before each split.
+
+Note that the `importance` argument will be latter used to construct variable importance measures.
+
+
+---
+# The output of the model
+
+```r
+rf_fit
+```
+
+```
+## Ranger result
+## 
+## Call:
+##  ranger(formula = medv ~ ., data = boston, mtry = 3, num.trees = 1000,      importance = "impurity") 
+## 
+## Type:                             Regression 
+## Number of trees:                  1000 
+## Sample size:                      506 
+## Number of independent variables:  13 
+## Mtry:                             3 
+## Target node size:                 5 
+## Variable importance mode:         impurity 
+## Splitrule:                        variance 
+## OOB prediction error (MSE):       10.3489 
+## R squared (OOB):                  0.8776533
+```
+
+---
+# Variable importance
+
+.pull-left[
+The idea is the same as in trees, only now we average the effect of a variable over the `\(B\)` trees.
+
+```r
+rf_fit %&gt;% 
+  vip()
+```
+According to our forest, both `lstat` and `rm` outperform the other features.
+]
+.pull-right[
+![](07-trees-forests_files/figure-html/unnamed-chunk-28-1..svg)&lt;!-- --&gt;
+]
+
+
+---
+class: title-slide-section-blue, center, middle
+name: ensemble
+
+# Other Ensemble Methods
+
+---
+# Bagging and Boosting
+
+- Bagging (Bootstrap Aggregating): same as random forest, only `\(m=p\)`. Inferior to random forests since trees are correlated.
+
+- Boosting: This is an example of a _slow learner_ where each tree is grown using information from previously grown trees. (can be estimated using the [`{gbm}`](https://cran.r-project.org/web/packages/gbm/index.html) package.)
+
+
+__Note:__ Boosting algorithms in general are very popular and are on the high-end of predictive performance.
+
+
+---
+class: .title-slide-final, center, inverse, middle
+
+# `slides::end()`
+
+[&lt;i class="fa fa-github"&gt;&lt;/i&gt; Source code](https://github.com/ml4econ/lecture-notes-2021/tree/master/07-trees-forests)  
+
+---
+# References
+
+Breiman L, Friedman J, Olshen R, Stone C (1984). _Classification and Regression Trees_. Chapman and Hall, New York.
+
+Breiman, L. (2001). Random forests. _Machine learning_, 45(1), 5-32.
+
+Varian, H. R. (2014). Big data: New tricks for econometrics. _Journal of Economic Perspectives_, 28(2), 3-28.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"slideNumberFormat": "<div class=\"progress-bar-container\">\n  <div class=\"progress-bar\" style=\"width: calc(%current% / %total% * 100%);\">\n  </div>\n</div>\n"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
