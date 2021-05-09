@@ -1,0 +1,158 @@
+---
+title: "Midterm Assignment"
+subtitle: "Kaggle Prediction Competition"
+author: "Itamar Caspi"
+date: "May 9, 2021 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: [default, "style/middlebury.css", "style/middlebury-fonts.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+      slideNumberFormat: |
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: calc(%current% / %total% * 100%);">
+          </div>
+        </div>
+      
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+
+knitr::opts_chunk$set(eval = TRUE,
+                      echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      cache = FALSE)
+
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+```
+
+# What is Kaggle?
+
+.pull-left[
+- Kaggle is a huge data science community where machine learning practitioners around the world compete against each other.  
+
+- The datasets used in Kaggle are uploaded by public companies as well as private users.  
+
+- A "kaggler" wins if her algorithm is the most accurate on a particular data set.  
+
+- Kaggle competitions are one of the best places to practice your ML skills and learn about state-of-the-art ML method.  
+]
+
+.pull-right[
+
+
+```{r, echo=FALSE, out.width = "50%", fig.align='center'}
+knitr::include_graphics("figs/titanic.jpg")
+```
+]
+
+---
+# Introduce yourself to Kaggle
+
+.pull-left[
+1. Visit [www.kaggle.com](www.kaggle.com) and sing-up.  
+
+2. Go to the ml4econ course competition [webpage](https://www.kaggle.com/t/7d925d886da049b88e99e4d2eb3a9add). 
+
+3. Review competition details: objectives, deadline, data, evaluation, submission rules, etc. 
+]
+.pull-right[
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("figs/ml4econ-kaggle.png")
+```
+]
+
+
+---
+# Kaggle competition data structure
+
+.pull-left[
+- MSE for the public test set (30%) immediately available at submission.  
+
+- MSE for the private test set (70%) available only once the competition closes.  
+
+- The split between public and private test sets is arbitrary and unknown in advance to all competitors.  
+
+
+Your final ranking is based on how well you perform on the *private* test set.
+]
+.pull-right[
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("figs/mse.png")
+```
+]
+
+
+---
+# The basic Kaggle competition workflow
+
+1. Acquire domain knowledge.  
+
+2. Explore the data.  
+
+3. Preprocessing (standardization, dummies, interactions, etc.).
+
+4. Choose a model class (asso, ridge, trees, etc.).  
+
+5. Tune complexity (Cross validation).  
+
+6. Submit your prediction.  
+
+7. __Document your workflow (R Markdown)__
+
+
+---
+# Tracking your performance
+
+.pull-left[
+- Use the public lead-board to track your performance. 
+
+- Your ranking ("scores" column) is based on your MSE on the public test set.
+
+- Once the competition is closed, the final ranking will be based on the MSE on the private test set.
+
+- Your can submit multiple predictions but be careful not to overfit the public test set!
+]
+.pull-right[
+```{r, echo=FALSE, fig.align='center'}
+knitr::include_graphics("figs/tracking.png")
+```
+]
+
+
+---
+# Getting started
+
+Running the following code chunk will automatically download the data (train, test, and a sample submission file) you'll need for our Kaggle competition:
+
+```{r remedy001, eval = FALSE}
+
+library(tidyverse)
+
+train <- read.csv("https://raw.githubusercontent.com/ml4econ/lecture-notes-2021/master/a-kaggle/data/train.csv")
+
+test <- read.csv("https://raw.githubusercontent.com/ml4econ/lecture-notes-2021/master/a-kaggle/data/test.csv")
+
+sample_submission <- read.csv("https://raw.githubusercontent.com/ml4econ/lecture-notes-2021/master/a-kaggle/data/sample_submission.csv")
+
+```
+
+__NOTE:__ By default, a new project will be created on your desktop.
+
+---
+class: .title-slide-final, center, inverse, middle
+
+# `slides %>% end()`
+
+[<i class="fa fa-github"></i> Source code](https://raw.githack.com/ml4econ/notes-spring2021/master/a-kaggle/a-kaggle.html)  
+
+
+
+
+

@@ -52,7 +52,8 @@ is.na(covid_raw[,-1]) <- covid_raw[,-1] == "NULL"
 
 
 ```{r}
-covid <- covid_raw %>%
+covid <- 
+  covid_raw %>%
   select(-test_date, -test_indication) %>% 
   filter(corona_result != "אחר") %>% 
   drop_na() %>%

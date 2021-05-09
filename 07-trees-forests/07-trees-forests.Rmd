@@ -159,12 +159,12 @@ boston %>%
 .pull-left[
 Now, let's try a three-way split:
 $$D_{1i}=\left\{\begin{array}{ll}
+1 & \text{ if } lstat_i < 15\\
+0 & \text{ otherwise }, 
+\end{array}\right.\quad
+D_{2i}=\left\{\begin{array}{ll}
 1 & \text{ if } lstat_i > 25\\
 0 & \text{ otherwise}, 
-\end{array}\right.\quad
-D_{1i}=\left\{\begin{array}{ll}
-1 & \text{ if } lstat_i < 5\\
-0 & \text{ otherwise }, 
 \end{array}\right.$$
 ```{r threeway, fig.show='hide'}
 boston %>% 

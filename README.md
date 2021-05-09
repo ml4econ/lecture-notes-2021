@@ -97,6 +97,8 @@ The schedule below is tentative and subject to change, depending on time and cla
 
 ### Projects
 
+A. Kaggle competition [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/a-kaggle/a-kaggle.html)
+[(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/a-kaggle/a-kaggle.pdf)
 
 ## Readings
 
