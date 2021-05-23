@@ -80,7 +80,7 @@ Source: [XKCD](https://xkcd.com/552/)
 ---
 # Looking forward
 
-- Until now, our focus what on prediction.
+- Until now, our focus was on prediction.
 
 - However, what we economists mostly care about is causal inference:
   - What is the effect of class size on student performance?
@@ -213,7 +213,7 @@ __EXAMPLE:__ Individuals who go to private universities probably have different 
 
 # Randomized control trial (RCT) solves selection bias
 
-In an RCT, the treatments are randomly assigned. This means entails that `\(D_i\)` is _independent_ of potential outcomes, namely
+In an RCT, the treatments are randomly assigned. This means that `\(D_i\)` is _independent_ of potential outcomes, namely
 
 `$$\{Y_{1i}, Y_{0i}\}  \perp D_i$$`
 
@@ -261,7 +261,7 @@ Typically, in observational studies, treatments are not randomly assigned. (Thin
 In this case, identifying causal effects depended on the _Unconfoundedness_ assumption (also known as "selection-on-observable"), which is defined as
 
 `$$\{Y_{1i}, Y_{0i}\}  \perp D_i | {X}_i$$`
-In words: treatment assignment is independent of potential outcomes _conditional_ on observed `\({X}_i\)`, i.e., selection bias _disappears_ when we control for `\({X}_I\)`.
+In words: treatment assignment is independent of potential outcomes _conditional_ on observable `\({X}_i\)`, i.e., selection bias _disappears_ when we control for `\({X}_i\)`.
 
 
 
@@ -269,7 +269,7 @@ In words: treatment assignment is independent of potential outcomes _conditional
 # Adjusting for confounding factors
 
 
-The most common approach for controlling for `\(X_i\)` is by adding them to the regression:
+The most common approach for controlling for `\(X_i\)` is by adding it to the regression:
 
 `$$Y_i = \alpha + \tau D_i + {X}_i'\boldsymbol{\beta} + u_i,$$`
 __COMMENTS__:
@@ -285,9 +285,9 @@ __COMMENTS__:
 ---
 # Illustration: the OHIE data
 
-- The Oregon Health Insurance Experiment (OHIE), is a randomized controlled trial for measuring the treatment effect of Medicade eligibility.
+- The Oregon Health Insurance Experiment (OHIE), is a randomized controlled trial for measuring the treatment effect of Medicaid eligibility.
 
-- Treatment group: Those selected in the Medicade lottery.
+- Treatment group: Those selected in the Medicaid lottery.
 
 - The outcome, `doc_any_12m`, equals to 1 for patients who saw a primary care physician, and zero otherwise.
 
@@ -295,7 +295,7 @@ __COMMENTS__:
 ---
 # Load the OHIE data
 
-In this illustration we will join 3 seperate (stata) files and load them to R using the [`{haven}`](https://haven.tidyverse.org/) package:
+In this illustration we will join 3 separate (stata) files and load them to R using the [`{haven}`](https://haven.tidyverse.org/) package:
 
 ```r
 descr &lt;- 
@@ -650,7 +650,7 @@ Source: Imbens (2019).
 
 .pull-left[
 &lt;img src="figs/iv1.png" width="499" style="display: block; margin: auto;" /&gt;
-Source: Imbens (forthcoming).
+Source: Imbens (2019).
 
 ]
 .pull-right[
@@ -1088,7 +1088,7 @@ __BOTTOM LINE:__ Controlling for `\(X\)` in this case results in finding a spuri
 
 - Hard to write down a DAG for complicated (econometric) structural models.
 
-- Need to specify the entire DGP (it REALY a limitation?)
+- Need to specify the entire DGP (is it REALY a limitation?)
 
 - Simultaneity: _"In fact it is not immediately obvious to me how one would capture supply and demand models in a DAG"_ (Imbens, forthcoming)
 
@@ -1124,7 +1124,7 @@ class: .title-slide-final, center, inverse, middle
 
 # `slides %&gt;% end()`
 
-[&lt;i class="fa fa-github"&gt;&lt;/i&gt; Source code](https://github.com/ml4econ/lecture-notes-2020/tree/master/08-causal-inference)  
+[&lt;i class="fa fa-github"&gt;&lt;/i&gt; Source code](https://github.com/ml4econ/lecture-notes-2021/tree/master/08-causal-inference)  
 
 
 ---
