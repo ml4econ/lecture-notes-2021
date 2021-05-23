@@ -98,7 +98,7 @@ knitr::include_graphics("figs/mse.png")
 
 3. Preprocessing (standardization, dummies, interactions, etc.).
 
-4. Choose a model class (asso, ridge, trees, etc.).  
+4. Choose a model class (Lasso, ridge, trees, etc.).  
 
 5. Tune complexity (Cross validation).  
 

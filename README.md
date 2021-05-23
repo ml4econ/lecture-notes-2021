@@ -91,6 +91,9 @@ The schedule below is tentative and subject to change, depending on time and cla
 
 ### Part II: Causal Inference and ML
 
+8. Causal Inference
+[(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/08-causal-inference/08-causal-inference.html) [(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/08-causal-inference/08-causal-inference.pdf)
+
 
 ### Part III: Unsupervised Learning
 

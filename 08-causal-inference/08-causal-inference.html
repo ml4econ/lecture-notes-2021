@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>08 - Causal Inference</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Itamar Caspi" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+    <script src="libs/anchor-sections/anchor-sections.js"></script>
+    <link href="libs/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style/middlebury.css" type="text/css" />
+    <link rel="stylesheet" href="style/middlebury-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# 08 - Causal Inference
+## ml4econ, HUJI 2020
+### Itamar Caspi
+### May 23, 2021 (updated: 2021-05-23)
+
+---
+
+
+# Replicating this presentation
+
+Use the [pacman](https://cran.r-project.org/web/packages/pacman/vignettes/Introduction_to_pacman.html) package to install and load packages:
+
+
+```r
+if (!require("pacman"))
+  install.packages("pacman")
+
+pacman::p_load(
+  tidyverse,   # for data wrangling and visualization
+  tidymodels,  # for modeling
+  haven,       # for reading dta files
+  here,        # for referencing folders
+  dagitty,     # for generating DAGs
+  ggdag,       # for drawing DAGs
+  knitr        # for printing html tables
+)
+```
+
+
+
+
+---
+
+# Outline
+
+- [Causal Inference](#caus)
+
+- [Potential Outcomes](#pot)
+
+- [Directed Acyiclic Graphs](#pot)
+
+- [Simulations](#sim)
+
+
+
+---
+class: title-slide-section-blue, center, middle
+name: caus
+
+# Causal Inference
+
+
+
+---
+# Predicting vs. explaining
+
+&lt;img src="figs/xkcd.png" width="625" style="display: block; margin: auto;" /&gt;
+
+Source: [XKCD](https://xkcd.com/552/)
+
+---
+# Looking forward
+
+- Until now, our focus what on prediction.
+
+- However, what we economists mostly care about is causal inference:
+  - What is the effect of class size on student performance?
+  - What is the effect of education on earnings?
+  - What is the effect of government spending on GDP?
+  - etc.
+  
+- Before we learn how to adjust and apply ML method to causal inference problems, we need to be explicit about what causal inference is.
+
+- This lecture will review two dominant approaches to causal inference, the statistical/econometric approach and the computer science approach.
+
+
+---
+# Pearl and Rubin
+&lt;img src="figs/rubin-pearl.png" width="672" style="display: block; margin: auto;" /&gt;
+
+__Source__: The Book of Why (Pearl and Mackenzie)
+
+
+---
+# A note on identification
+
+- The primary focus of this lecture is on identification, as opposed to prediction, estimation and inference.
+
+- In short, identification is defined as
+
+_"model parameters or features being uniquely determined from the observable population that generates the data."_ - (Lewbel, 2019)
+
+- More specifically, think about identifying the parameter of interest when you have unlimited data (the entire population).
+
+---
+class: title-slide-section-blue, center, middle
+name: pot
+
+# Potential Outcomes
+
+---
+# The road not taken
+
+&lt;img src="figs/roads.png" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+Source: [https://mru.org/courses/mastering-econometrics/ceteris-paribus](https://mru.org/courses/mastering-econometrics/ceteris-paribus)
+
+---
+# Notation
+
+- `\(Y\)` is a random variable
+
+- `\(X\)` is a vector of attributes
+
+- `\(\mathbf{X}\)` is a design matrix
+
+
+
+---
+# Treatment and potential outcomes (Rubin, 1974, 1977)
+
+- Treatment
+
+`$$D_i=\begin{cases}
+    1, &amp; \text{if unit } i \text{ received the treatment} \\
+    0, &amp; \text{otherwise.}
+\end{cases}$$`
+
+--
+
+- Treatment and potential outcomes
+
+`$$\begin{matrix}
+    Y_{i0} &amp; \text{is the potential outcome for unit } i \text{ with } D_i = 0\\
+    Y_{i1} &amp; \text{is the potential outcome for unit } i \text{ with }D_i = 1
+\end{matrix}$$`
+
+
+--
+
+- Observed outcome: Under the Stable Unit Treatment Value Assumption (SUTVA), The realization of unit `\(i\)`'s outcome is
+
+`$$Y_i = Y_{1i}D_i + Y_{0i}(1-D_i)$$`
+
+--
+
+__Fundamental problem of causal inference__ (Holland, 1986): We cannot observe _both_ `\(Y_{1i}\)` and `\(Y_{0i}\)`.
+
+
+---
+# Treatment effect and observed outcomes
+
+- Individual treatment effect: The difference between unit `\(i\)`'s potential outcomes:
+
+`$$\tau_i = Y_{1i} - Y_{0i}$$`
+
+
+--
+
+- _Average treatment effect_ (ATE)
+
+`$$\mathbb{E}[\tau_i] = \mathbb{E}[Y_{1i}-Y_{0i}] = \mathbb{E}[Y_{1i}]-\mathbb{E}[Y_{0i}]$$`
+
+--
+
+
+- _Average treatment effect for the treatment group_ (ATT)
+
+`$$\mathbb{E}[\tau_i | D_i=1] = \mathbb{E}[Y_{1i}-Y_{0i}| D_i=1] = \mathbb{E}[Y_{1i}| D_i=1]-\mathbb{E}[Y_{0i}| D_i=1]$$`
+
+__NOTE:__ The complement of the treatment group is the _control_ group.
+
+---
+
+# Selection bias
+
+
+A naive estimand for ATE is the difference between average outcomes based on treatment status
+
+However, this might be misleading:
+
+`$$\begin{aligned} \mathbb{E}\left[Y_{i} | D_{i}=1\right]-\mathbb{E}\left[Y_{i} | D_{i}=0\right] &amp;=\underbrace{\mathbb{E}\left[Y_{1 i} | D_{i}=1\right]-\mathbb{E}\left[Y_{0i} | D_{i}=1\right]}_{\text{ATT}} +
+\underbrace{\mathbb{E}\left[Y_{0 i} | D_{i}=1\right]-\mathbb{E}\left[Y_{0i} | D_{i}=0\right]}_{\text{selection bias}}
+\end{aligned}$$`
+
+
+&gt; __Causal inference is mostly about eliminating selection-bias__
+
+
+__EXAMPLE:__ Individuals who go to private universities probably have different characteristics than those who go to public universities.
+
+---
+
+# Randomized control trial (RCT) solves selection bias
+
+In an RCT, the treatments are randomly assigned. This means entails that `\(D_i\)` is _independent_ of potential outcomes, namely
+
+`$$\{Y_{1i}, Y_{0i}\}  \perp D_i$$`
+
+RCTs enables us to estimate ATE using the average difference in outcomes by treatment status:
+
+`$$\begin{aligned} \mathbb{E}\left[Y_{i} | D_{i}=1\right]-\mathbb{E}\left[Y_{i} | D_{i}=0\right] &amp;=\mathbb{E}\left[Y_{1 i} | D_{i}=1\right]-\mathbb{E}\left[Y_{0i} | D_{i}=0\right] \\ &amp;=\mathbb{E}\left[Y_{1 i} | D_{i}=1\right]-\mathbb{E}\left[Y_{0 i} | D_{i}=1\right] \\
+&amp;= \mathbb{E}\left[Y_{1 i}-Y_{0 i} | D_{i}=1\right] \\
+&amp;= \mathbb{E}\left[Y_{1 i}-Y_{0 i}\right] \\
+&amp;= \text{ATE}
+\end{aligned}$$`
+
+__EXAMPLE:__ In theory, randomly assigning students to private and public universities would allow us to estimate the ATE going to private school have on future earnings. Clearly, RCT in this case is infeasible.
+
+---
+
+# Estimands and regression
+
+
+Assume for now that the treatment effect is constant across all individuals, i.e., 
+
+`$$\tau = Y_{1i}-Y_{0i},\quad \forall i.$$` 
+
+Accordingly, we can express `\(Y_i\)` as
+
+`$$\begin{aligned}
+Y_i &amp;= Y_{1i}D_i + Y_{0i}(1-D_i) \\
+&amp;= Y_{0i} + D_i(Y_{1i} - Y_{0i}), \\
+&amp;= Y_{0i} + \tau D_i, &amp; \text{since }\tau = Y_{1i}-Y_{0i}\\
+&amp;= \mathbb{E}[Y_{0i}] + \tau D_i + Y_{0i}-\mathbb{E}[Y_{0i}], &amp; \text{add and subtract } \mathbb{E}[Y_{0i}]\\
+\end{aligned}$$`
+
+Or more conveniently
+
+`$$Y_i = \alpha + \tau D_i + u_i,$$`
+
+where `\(\alpha = \mathbb{E}[Y_{0i}]\)` and `\(u_i = Y_{0i}-\mathbb{E}[Y_{0i}]\)` is the random component of `\(Y_{0i}\)`.
+
+
+---
+# Unconfoundedness
+
+Typically, in observational studies, treatments are not randomly assigned. (Think of `\(D_i = \{\text{private}, \text{public}\}\)`.) 
+
+
+In this case, identifying causal effects depended on the _Unconfoundedness_ assumption (also known as "selection-on-observable"), which is defined as
+
+`$$\{Y_{1i}, Y_{0i}\}  \perp D_i | {X}_i$$`
+In words: treatment assignment is independent of potential outcomes _conditional_ on observed `\({X}_i\)`, i.e., selection bias _disappears_ when we control for `\({X}_I\)`.
+
+
+
+---
+# Adjusting for confounding factors
+
+
+The most common approach for controlling for `\(X_i\)` is by adding them to the regression:
+
+`$$Y_i = \alpha + \tau D_i + {X}_i'\boldsymbol{\beta} + u_i,$$`
+__COMMENTS__:
+
+  1. Strictly speaking, the above regression model is valid if we actually _believe_ that the "true" model is `\(Y_i = \alpha + \tau D_i + {X}_i'\boldsymbol{\beta} + u_i.\)` 
+  
+  2. If `\(D_i\)` is randomly assigned, adding `\({X}_i\)` to the regression __might__ increases the accuracy of ATE.
+  
+  3. If `\(D_i\)` is assigned conditional on `\({X}_i\)` (e.g., in observational settings), adding `\({X}_i\)` to the regression eliminates selection bias.
+
+
+
+---
+# Illustration: the OHIE data
+
+- The Oregon Health Insurance Experiment (OHIE), is a randomized controlled trial for measuring the treatment effect of Medicade eligibility.
+
+- Treatment group: Those selected in the Medicade lottery.
+
+- The outcome, `doc_any_12m`, equals to 1 for patients who saw a primary care physician, and zero otherwise.
+
+
+---
+# Load the OHIE data
+
+In this illustration we will join 3 seperate (stata) files and load them to R using the [`{haven}`](https://haven.tidyverse.org/) package:
+
+```r
+descr &lt;- 
+  here("08-causal-inference/data",
+       "oregonhie_descriptive_vars.dta") %&gt;% 
+  read_dta()
+
+prgm &lt;- 
+  here("08-causal-inference/data",
+       "oregonhie_stateprograms_vars.dta") %&gt;% 
+  read_dta()
+
+s12 &lt;- 
+  here("08-causal-inference/data",
+       "oregonhie_survey12m_vars.dta") %&gt;% 
+  read_dta()
+```
+
+The entire OHIE data can be found [here](http://nber.org/oregon/4.data.html).
+
+---
+# Preprocessing: Joining datasets
+
+Join 3 data frames and remove empty responses:
+
+```r
+ohie_raw &lt;- 
+  descr %&gt;% 
+  left_join(prgm) %&gt;% 
+  left_join(s12) %&gt;% 
+  filter(sample_12m_resp == 1) %&gt;% 
+  drop_na(doc_any_12m)
+```
+
+---
+# Preprocessing: Refinement
+
+Select the relevant variables and re-level `numhh_list` (household size)
+
+```r
+ohie &lt;- 
+  ohie_raw %&gt;% 
+  dplyr::select(numhh_list, treatment, doc_any_12m) %&gt;% 
+  mutate(
+    numhh_list = factor(numhh_list, levels = c("1", "2", "3"))
+  )
+```
+
+---
+# The final dataset
+
+
+```r
+ohie
+```
+
+```
+## # A tibble: 23,492 x 3
+##    numhh_list        treatment doc_any_12m
+##    &lt;fct&gt;             &lt;dbl+lbl&gt;   &lt;dbl+lbl&gt;
+##  1 1          1 [Selected]         0 [No] 
+##  2 1          1 [Selected]         0 [No] 
+##  3 1          1 [Selected]         0 [No] 
+##  4 1          1 [Selected]         1 [Yes]
+##  5 2          0 [Not selected]     0 [No] 
+##  6 1          0 [Not selected]     1 [Yes]
+##  7 2          0 [Not selected]     1 [Yes]
+##  8 1          1 [Selected]         1 [Yes]
+##  9 1          1 [Selected]         0 [No] 
+## 10 2          1 [Selected]         1 [Yes]
+## # ... with 23,482 more rows
+```
+
+---
+# Distribution of treated-control
+
+
+```r
+ohie %&gt;% 
+  count(treatment) %&gt;%
+  kable(format = "html")
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; treatment &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; n &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11811 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11681 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+# Estimating ATE
+
+The estimated model
+`$$doc\_any\_12m_i = \alpha + \tau\times selected_i + \varepsilon_i$$`
+In R:
+
+```r
+fit &lt;- lm(doc_any_12m ~ treatment, data = ohie)
+```
+
+---
+# Results
+
+```r
+fit %&gt;% 
+  tidy(conf.int = TRUE) %&gt;% 
+  filter(term != "(Intercept)") %&gt;% 
+  dplyr::select(term, estimate, starts_with("conf.")) %&gt;% 
+  kable(digits = 4, format = "html")
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; term &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estimate &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; conf.low &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; conf.high &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; treatment &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0572 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0447 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0697 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+__Interpretation:__ being selected in the lottery increases the probability that you visit primary care physician in the following year by 5.72 [4.47, 7.97] percentage points.
+
+
+
+---
+# Adjustments
+
+One issue with OHIE is that people are able to apply for Medicaid for their entire household.
+
+This fact undermines the critical random assignment assumption since belonging to larger households increases the chances of being selected to Medicade.
+
+
+```r
+ohie %&gt;% 
+  count(treatment, numhh_list) %&gt;% 
+  kable(format = "html")
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; treatment &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; numhh_list &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; n &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8824 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2981 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7679 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3950 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 52 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+---
+# ATE under adjustment for `numhh`
+
+The model with adjustment:
+`$$doc\_any\_12m_i = \alpha + \tau\times selected_i + \beta\times numhh_i+ \varepsilon_i$$`
+Estimation:
+
+```r
+fit_adj &lt;- lm(doc_any_12m ~ treatment + numhh_list, data = ohie)
+```
+
+---
+# Results
+
+
+```r
+fit_adj %&gt;% 
+  tidy(conf.int = TRUE) %&gt;% 
+  dplyr::select(term, estimate, starts_with("conf.")) %&gt;% 
+  kable(digits = 4, format = "html")
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; term &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estimate &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; conf.low &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; conf.high &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5925 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5831 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6020 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; treatment &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0635 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0510 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0760 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; numhh_list2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.0654 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.0792 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.0517 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; numhh_list3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.1839 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.3097 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.0582 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+After adjusting for `numhh`, ATE has increased from 5.72 to 6.35 percentage points. (Can you guess why?)
+
+
+
+
+---
+class: title-slide-section-blue, center, middle
+name: pot
+
+# Directed Acyclic Graphs
+
+
+---
+# DAGs
+
+&lt;img src="figs/pitt-dags.jpg" style="display: block; margin: auto;" /&gt;
+
+[Source](https://i.imgflip.com/1xhtwh.jpg)
+
+---
+# What are DAGs?
+
+.pull-left[
+A DAG (directed acyclic graph) is a way to model a system of causal interactions using graphs.
+
+
+- __Nodes__ represents random variables, e.g., `\(X\)`, `\(Y\)`, etc.
+- __Arrows__ (or directed edges) represent "from `\(\rightarrow\)` to" causal effects. For example, `\(Z\rightarrow X\)` reads " `\(Z\)` causes `\(X\)`".
+- A __path__ is a sequence of edges connecting two nodes. For example, `\(Z\rightarrow X \rightarrow M \leftarrow Y\)` describes a path from `\(Z\)` to `\(Y\)`.
+- In a __direct path__ arrows point to the same direction: `\(Z\rightarrow X \rightarrow M\)`
+]
+.pull-right[
+![](08-causal-inference_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+]
+
+---
+# Confounder DAG
+
+.pull-left[
+- `\(X\)` is a common cause of `\(D\)` and `\(Y\)`.
+
+- conditioning on `\(X\)` removes dependency between `\(D\)` and `\(Y\)` through `\(X\)`.
+
+- In DAG terms, controlling for X "closes the backdoor path" between `\(D\)` and `\(Y\)`, and leaves open the direct path.
+
+- The notion of closing the backdoor path is related to the notion of omitted variable bias.
+
+]
+.pull-right[
+![](08-causal-inference_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+]
+
+---
+#DAGs and SEM
+
+- Another way to think about DAGs is as non-parametric __structural equation models__ (SEM)
+
+- For example, the single-confounder DAG we've just seen can be represented by a set of three equations:  
+
+`$$\begin{array}{l}
+X\leftarrow f_X\left(u_{X}\right) \\
+D\leftarrow f_D\left(X, u_D\right)\\
+Y\leftarrow f_Y(D,X,u_Y)
+\end{array}$$`
+where 
+- The `\(f_{i}\)`'s denote the causal mechanisms in the model. Are not restricted to be linear.
+- `\(u_X,u_D\)`,and `\(u_Y\)` denote independent background factors that the we chooses not to include in the analysis.
+- Assignment operator `\((\leftarrow)\)` captures asymmetry of causal relationships.
+
+
+---
+# Unconfoundedness in DAGs
+
+&lt;img src="figs/unconfoundedness.png" width="929" style="display: block; margin: auto;" /&gt;
+
+Source: Imbens (2019).
+
+---
+# Example: Identifying the Returns to Education
+
+
+&lt;img src="figs/wage-dag.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+Source: Imbens (2019).
+
+
+---
+# Instrumental variables in DAGs
+
+.pull-left[
+&lt;img src="figs/iv1.png" width="499" style="display: block; margin: auto;" /&gt;
+Source: Imbens (forthcoming).
+
+]
+.pull-right[
+&lt;img src="figs/iv2.png" width="571" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+
+---
+# A mediator
+
+.pull-left[
+- `\(D\)` causes `\(M\)` causes `\(Y\)`.
+
+- `\(M\)` mediates the causal effect of `\(D\)` on `\(Y\)`
+
+- conditioning on `\(M\)` removes dependency between `\(D\)` and `\(Y\)`
+
+- We've essentially closed a direct path (the only direct path between `\(D\)` and `\(Y\)`.
+
+]
+.pull-right[
+![](08-causal-inference_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
+]
+
+
+---
+# A Collider
+
+.pull-left[
+
+- `\(D\)` are `\(Y\)` are independent.
+
+- `\(D\)` and `\(Y\)` jointly cause `\(C\)`.
+
+- conditioning on `\(C\)` creates dependency between `\(D\)` and `\(Y\)`
+
+]
+.pull-right[
+![](08-causal-inference_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+]
+
+---
+# Example: "Bad controls"
+
+.pull-left[
+- "Bad controls" are variables that are themselves outcome variables.
+
+- This distinction becomes important when dealing with high-dimensional data
+
+__EXAMPLE:__ Occupation as control in a return to years of schooling regression.
+
+Discovering that a person works as a developer in a high-tech firm changes things; knowing that the person does not have a college degree tells us immediately that he is likely to be very talented.
+]
+.pull-right[
+![](08-causal-inference_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+]
+
+
+---
+# Collider: M-bias
+
+&lt;img src="08-causal-inference_files/figure-html/unnamed-chunk-24-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: title-slide-section-blue, center, middle
+name: sim
+
+# Simulations
+
+
+
+---
+# Simulation I: De-counfounding
+
+.pull-left[
+
+Simulate the DGP:
+
+```r
+n &lt;- 1000
+p &lt;- 3
+
+u &lt;- matrix(rnorm(n * p), n, p)
+
+x &lt;- u[,2]
+d &lt;- 0.8 * x + 0.6 * u[,1]
+y &lt;- 0 * d + 0.2 * x + u[,3]
+```
+Note that the "true" effect `\(D\rightarrow Y\)` is zero (i.e., `\(ATE=0\)`).
+]
+.pull-right[
+![](08-causal-inference_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
+]
+
+---
+# Simulation I: De-counfounding (cont.)
+
+.pull-left[
+Raw correlation matrix:
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; y &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; x &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; d &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; y &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; x &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; d &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.0 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+__Note:__ `\(Y\)` and `\(D\)` are correlated even though there is no direct arrow between them. This is due to the confounder `\(X\)` which opens a backdoor path between `\(Y\)` and `\(D\)`.
+]
+.pull-right[
+![](08-causal-inference_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
+]
+
+---
+# Simulation I: De-counfounding (cont.)
+
+.pull-left[
+
+Let's estimate the model with `\(X\)` on the right hand side:
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; term &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estimate &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p.value &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; d &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.81 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; x &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.15 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+and without `\(X\)`
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; term &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estimate &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p.value &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; d &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.12 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+  
+__BOTTOM LINE:__ Controlling for `\(X\)` provides the correct answer.
+]
+.pull-right[
+![](08-causal-inference_files/figure-html/unnamed-chunk-31-1.png)&lt;!-- --&gt;
+]
+
+---
+# Simulation II: Mediator
+
+.pull-left[
+The DGP:
+
+```r
+n &lt;- 1000
+p &lt;- 3
+
+u &lt;- matrix(rnorm(n * p), n, p)
+
+d &lt;- u[,1]
+m &lt;- 1.3 * d + u[,2]
+y &lt;- 0.1 * m + u[,3]
+```
+
+True effect of `\(D\rightarrow Y\)` is `\(1.3\times 0.1 = 0.13\)`.
+]
+.pull-right[
+![](08-causal-inference_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
+]
+
+---
+# Simulation II: Mediator (cont.)
+
+.pull-left[
+Raw correlation matrix:
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; y &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; m &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; d &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; y &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; m &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; d &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.0 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+  
+In this case, both the mediator `\(M\)` and the treatment `\(D\)` are correlated with the outcome `\(Y\)`. 
+]
+.pull-right[
+![](08-causal-inference_files/figure-html/unnamed-chunk-35-1.png)&lt;!-- --&gt;
+]
+
+
+---
+# Simulation II: Mediator (cont.)
+
+.pull-left[
+Estimate the model with `\(M\)`:  
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; term &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estimate &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p.value &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; d &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.03 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.59 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; m &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.00 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+  
+and without `\(M\)`:  
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; term &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estimate &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p.value &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; d &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.12 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+__BOTTOM LINE:__ Controlling for `\(M\)` in this case biases the total effect of `\(D\)` on `\(Y\)` downward since it blocks the path from `\(D\)` to `\(Y\)`.
+
+]
+.pull-right[
+![](08-causal-inference_files/figure-html/unnamed-chunk-38-1.png)&lt;!-- --&gt;
+]
+
+---
+# Simulation III: M-bias
+
+.pull-left[
+Generate the data:
+
+```r
+n &lt;- 1000
+p &lt;- 3
+
+u &lt;- matrix(rnorm(n * p), n, p)
+
+d &lt;- u[,1]
+x &lt;- 0.8 * u[,1] + 0.2 * u[,2] + 0.6 * u[,3]
+y &lt;- 0 * d + u[,2]
+```
+
+Note that `\(X\)` is a collider, and that the "true" effect `\(D\rightarrow Y\)` is zero (i.e., `\(ATE=0\)`).
+]
+.pull-right[
+![](08-causal-inference_files/figure-html/unnamed-chunk-40-1.png)&lt;!-- --&gt;
+]
+
+---
+# Simulation III: M-bias (cont.)
+
+.pull-left[
+Raw correlation matrix:
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; y &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; x &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; d &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; y &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; x &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; d &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.0 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Notice how `\(Y\)` is uncorrelated with `\(D\)` and `\(X\)` is correlated with both `\(D\)` and `\(Y\)`.
+]
+.pull-right[
+![](08-causal-inference_files/figure-html/unnamed-chunk-42-1.png)&lt;!-- --&gt;
+]
+
+
+---
+# Simulation III: M-bias
+
+.pull-left[
+Estimate the model with `\(X\)`  
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; term &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estimate &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p.value &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; d &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.37 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; x &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.49 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+and without `\(X\)`
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; term &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estimate &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; p.value &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; d &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.69 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+__BOTTOM LINE:__ Controlling for `\(X\)` in this case results in finding a spurious effect of `\(D\)` on `\(Y\)` since it opens a backdoor path between `\(D\)` to `\(Y\)`.
+
+]
+.pull-right[
+![](08-causal-inference_files/figure-html/unnamed-chunk-45-1.png)&lt;!-- --&gt;
+]
+
+
+
+
+---
+# Limitations of DAGs
+
+- Hard to write down a DAG for complicated (econometric) structural models.
+
+- Need to specify the entire DGP (it REALY a limitation?)
+
+- Simultaneity: _"In fact it is not immediately obvious to me how one would capture supply and demand models in a DAG"_ (Imbens, forthcoming)
+
+&lt;img src="figs/sim.png" width="55%" style="display: block; margin: auto;" /&gt;
+
+
+---
+# Recommended introductory level resources on DAGs
+
+- [The Book of Why](http://bayes.cs.ucla.edu/WHY/) by Pearl and Mackenzie.
+
+- [Causal Inference in Machine Learning and Al](https://www.dropbox.com/s/ps4a0iwc0q51q9z/Hunermund%20-%20Causal%20Inference%20in%20ML%20and%20AI.pdf) by Paul Hünermund.
+
+- [Causal Inference: The Mixtape (pp. 67-80)](https://www.scunning.com/mixtape.html) by Scott Cunningham.
+
+- [Potential Outcome and Directed Acyclic Graph Approaches to Causality: Relevance for Empirical Practice in Economics](https://www.aeaweb.org/articles?id=10.1257/jel.20191597&amp;&amp;from=f) by Guido W. Imbens
+
+- [A Crash Course in Good and Bad Controls](https://ftp.cs.ucla.edu/pub/stat_ser/r493.pdf) by Cinelli, Forney, and Pearl, J. (2020).
+
+---
+# Next time: Causal inference in high-dimensional setting
+
+Consider again the standard "treatment effect regression":
+
+`$$Y_i=\alpha+\underbrace{\tau D_i}_{\text{low dimensional}} +\underbrace{\sum_{j=1}^{k}\beta_{j}X_{ij}}_{\text{high dimensional}}+\varepsilon_i,\quad\text{for }i=1,\dots,n$$`
+Our object of interest is `\(\widehat{\tau}\)`, the estimated _average treatment effect_ (ATE).  
+
+In high-dimensional settings `\(k \gg n\)`.
+
+
+---
+class: .title-slide-final, center, inverse, middle
+
+# `slides %&gt;% end()`
+
+[&lt;i class="fa fa-github"&gt;&lt;/i&gt; Source code](https://github.com/ml4econ/lecture-notes-2020/tree/master/08-causal-inference)  
+
+
+---
+# Selected references
+
+
+Hünermund, P., &amp; Bareinboim, E. (2019). Causal Inference and Data-Fusion in Econometrics. arXiv preprint arXiv:1912.09104.
+
+Imbens, W. G. (forthcoming). Potential Outcome and Directed Acyclic Graph Approaches to Causality: Relevance for Empirical Practice in Economics. _Journal of Economic Literature_.
+
+Lewbel, A. (2019). The identification zoo: Meanings of identification in econometrics. _Journal of Economic Literature_, 57(4), 835-903.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"slideNumberFormat": "<div class=\"progress-bar-container\">\n  <div class=\"progress-bar\" style=\"width: calc(%current% / %total% * 100%);\">\n  </div>\n</div>\n"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
