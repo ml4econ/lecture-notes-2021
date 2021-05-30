@@ -1,6 +1,6 @@
 ---
 title: "08 - Causal Inference"
-subtitle: "ml4econ, HUJI 2020"
+subtitle: "ml4econ, HUJI 2021"
 author: "Itamar Caspi"
 date: "May 23, 2021 (updated: `r Sys.Date()`)"
 output:

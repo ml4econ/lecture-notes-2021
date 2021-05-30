@@ -94,6 +94,9 @@ The schedule below is tentative and subject to change, depending on time and cla
 8. Causal Inference
 [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/08-causal-inference/08-causal-inference.html) [(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/08-causal-inference/08-causal-inference.pdf)
 
+9. High-Dimensional Confounding Adjustment
+[(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/09-lasso-ate/09-lasso-ate.html)
+[(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/09-lasso-ate/09-lasso-ate.pdf)
 
 ### Part III: Unsupervised Learning
 
