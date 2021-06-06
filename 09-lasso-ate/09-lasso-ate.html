@@ -395,13 +395,18 @@ __Regularization Event__ The tuning parameter `\(\lambda\)` is to a value that i
 ---
 
 &lt;img src="figs/angrist_1.png" width="100%" style="display: block; margin: auto;" /&gt;
-
 __Source__: Angrist and Frandsen (2019).
+
+???
+
+Notes: The sample size is 14,238 . Estimates in columns `\(1-3\)` are from a post-double-selection (PDS) lasso procedure. Results in columns `\(4-6\)` are from a procedure applying lasso to a reduced-form regression of the the outcome on the dictionary of controls Columns 1 and 4 show results using the Stata 16 lasso linear command to select controls with a plug-in penalty, and OLS to compute the estimates. Columns 2 and 5 use lasso linear with 10 -fold cross validation to select the penalty. Columns 3 and 6 use Stata 15 (Lassopack) cvlasso to select the penalty, rlasso to select controls, and `\(\mathrm{OLS}\)` to compute estimates. See the appendix for detals. Column 7 reports OLS estimates including the entire set of controls. Controls include those used for column 5 of the previous table plus the following: indicators for being accepted to two colleges, three colleges, and four or more colleges; indicators for being rejected from one college, two colleges, three colleges, and four or more colleges; the number of schools applied to; the average SAT score among schools at which the applicant was accepted; the average SAT score among schools from which the applicant was rejected; the highest average SAT score across schools at which the applicant was accepted; the highest average SAT score across schools from which the applicant was rejected; the lowest average SAT score among schools at which the applicant was accepted; the lowest average SAT score among schools from which the applicant was rejected, and all two-way interactions of the above variables. The control dictionary contains 384 variables. OLS estimates use weights, and are reported with robust standard errors clustered by institution. All lasso commands use regressor-specific penalty loadings.
+
 ---
 
 &lt;img src="figs/angrist_2.png" width="100%" style="display: block; margin: auto;" /&gt;
 
 __Source__: Angrist and Frandsen (2019).
+
 
 
 ---
@@ -471,21 +476,21 @@ GrowthData %&gt;%
 
 ```
 ## # A tibble: 2 x 63
-##   Outcome intercept gdpsh465 bmp1l freeop freetar   h65  hm65  hf65   p65  pm65
-##     &lt;dbl&gt;     &lt;int&gt;    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-## 1 -0.0243         1     6.59 0.284  0.153  0.0439 0.007 0.013 0.001  0.29  0.37
-## 2  0.100          1     6.83 0.614  0.314  0.0618 0.019 0.032 0.007  0.91  1   
-## # ... with 52 more variables: pf65 &lt;dbl&gt;, s65 &lt;dbl&gt;, sm65 &lt;dbl&gt;, sf65 &lt;dbl&gt;,
-## #   fert65 &lt;dbl&gt;, mort65 &lt;dbl&gt;, lifee065 &lt;dbl&gt;, gpop1 &lt;dbl&gt;, fert1 &lt;dbl&gt;,
-## #   mort1 &lt;dbl&gt;, invsh41 &lt;dbl&gt;, geetot1 &lt;dbl&gt;, geerec1 &lt;dbl&gt;, gde1 &lt;dbl&gt;,
-## #   govwb1 &lt;dbl&gt;, govsh41 &lt;dbl&gt;, gvxdxe41 &lt;dbl&gt;, high65 &lt;dbl&gt;, highm65 &lt;dbl&gt;,
-## #   highf65 &lt;dbl&gt;, highc65 &lt;dbl&gt;, highcm65 &lt;dbl&gt;, highcf65 &lt;dbl&gt;, human65 &lt;dbl&gt;,
-## #   humanm65 &lt;dbl&gt;, humanf65 &lt;dbl&gt;, hyr65 &lt;dbl&gt;, hyrm65 &lt;dbl&gt;, hyrf65 &lt;dbl&gt;,
-## #   no65 &lt;dbl&gt;, nom65 &lt;dbl&gt;, nof65 &lt;dbl&gt;, pinstab1 &lt;dbl&gt;, pop65 &lt;int&gt;,
-## #   worker65 &lt;dbl&gt;, pop1565 &lt;dbl&gt;, pop6565 &lt;dbl&gt;, sec65 &lt;dbl&gt;, secm65 &lt;dbl&gt;,
-## #   secf65 &lt;dbl&gt;, secc65 &lt;dbl&gt;, seccm65 &lt;dbl&gt;, seccf65 &lt;dbl&gt;, syr65 &lt;dbl&gt;,
-## #   syrm65 &lt;dbl&gt;, syrf65 &lt;dbl&gt;, teapri65 &lt;dbl&gt;, teasec65 &lt;dbl&gt;, ex1 &lt;dbl&gt;,
-## #   im1 &lt;dbl&gt;, xr65 &lt;dbl&gt;, tot1 &lt;dbl&gt;
+##   Outcome intercept gdpsh465 bmp1l freeop freetar   h65  hm65  hf65   p65  pm65  pf65
+##     &lt;dbl&gt;     &lt;int&gt;    &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 -0.0243         1     6.59 0.284  0.153  0.0439 0.007 0.013 0.001  0.29  0.37  0.21
+## 2  0.100          1     6.83 0.614  0.314  0.0618 0.019 0.032 0.007  0.91  1     0.65
+## # ... with 51 more variables: s65 &lt;dbl&gt;, sm65 &lt;dbl&gt;, sf65 &lt;dbl&gt;, fert65 &lt;dbl&gt;,
+## #   mort65 &lt;dbl&gt;, lifee065 &lt;dbl&gt;, gpop1 &lt;dbl&gt;, fert1 &lt;dbl&gt;, mort1 &lt;dbl&gt;,
+## #   invsh41 &lt;dbl&gt;, geetot1 &lt;dbl&gt;, geerec1 &lt;dbl&gt;, gde1 &lt;dbl&gt;, govwb1 &lt;dbl&gt;,
+## #   govsh41 &lt;dbl&gt;, gvxdxe41 &lt;dbl&gt;, high65 &lt;dbl&gt;, highm65 &lt;dbl&gt;, highf65 &lt;dbl&gt;,
+## #   highc65 &lt;dbl&gt;, highcm65 &lt;dbl&gt;, highcf65 &lt;dbl&gt;, human65 &lt;dbl&gt;, humanm65 &lt;dbl&gt;,
+## #   humanf65 &lt;dbl&gt;, hyr65 &lt;dbl&gt;, hyrm65 &lt;dbl&gt;, hyrf65 &lt;dbl&gt;, no65 &lt;dbl&gt;,
+## #   nom65 &lt;dbl&gt;, nof65 &lt;dbl&gt;, pinstab1 &lt;dbl&gt;, pop65 &lt;int&gt;, worker65 &lt;dbl&gt;,
+## #   pop1565 &lt;dbl&gt;, pop6565 &lt;dbl&gt;, sec65 &lt;dbl&gt;, secm65 &lt;dbl&gt;, secf65 &lt;dbl&gt;,
+## #   secc65 &lt;dbl&gt;, seccm65 &lt;dbl&gt;, seccf65 &lt;dbl&gt;, syr65 &lt;dbl&gt;, syrm65 &lt;dbl&gt;,
+## #   syrf65 &lt;dbl&gt;, teapri65 &lt;dbl&gt;, teasec65 &lt;dbl&gt;, ex1 &lt;dbl&gt;, im1 &lt;dbl&gt;, xr65 &lt;dbl&gt;,
+## #   tot1 &lt;dbl&gt;
 ```
 
 

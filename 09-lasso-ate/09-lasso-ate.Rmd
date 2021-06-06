@@ -417,8 +417,12 @@ __Regularization Event__ The tuning parameter $\lambda$ is to a value that it se
 ```{r, echo=FALSE, out.width = "100%", fig.align='center'}
 knitr::include_graphics("figs/angrist_1.png")
 ```
-
 __Source__: Angrist and Frandsen (2019).
+
+???
+
+Notes: The sample size is 14,238 . Estimates in columns $1-3$ are from a post-double-selection (PDS) lasso procedure. Results in columns $4-6$ are from a procedure applying lasso to a reduced-form regression of the the outcome on the dictionary of controls Columns 1 and 4 show results using the Stata 16 lasso linear command to select controls with a plug-in penalty, and OLS to compute the estimates. Columns 2 and 5 use lasso linear with 10 -fold cross validation to select the penalty. Columns 3 and 6 use Stata 15 (Lassopack) cvlasso to select the penalty, rlasso to select controls, and $\mathrm{OLS}$ to compute estimates. See the appendix for detals. Column 7 reports OLS estimates including the entire set of controls. Controls include those used for column 5 of the previous table plus the following: indicators for being accepted to two colleges, three colleges, and four or more colleges; indicators for being rejected from one college, two colleges, three colleges, and four or more colleges; the number of schools applied to; the average SAT score among schools at which the applicant was accepted; the average SAT score among schools from which the applicant was rejected; the highest average SAT score across schools at which the applicant was accepted; the highest average SAT score across schools from which the applicant was rejected; the lowest average SAT score among schools at which the applicant was accepted; the lowest average SAT score among schools from which the applicant was rejected, and all two-way interactions of the above variables. The control dictionary contains 384 variables. OLS estimates use weights, and are reported with robust standard errors clustered by institution. All lasso commands use regressor-specific penalty loadings.
+
 ---
 
 ```{r, echo=FALSE, out.width = "100%", fig.align='center'}
@@ -426,6 +430,7 @@ knitr::include_graphics("figs/angrist_2.png")
 ```
 
 __Source__: Angrist and Frandsen (2019).
+
 
 
 ---
