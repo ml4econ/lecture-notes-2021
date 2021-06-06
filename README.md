@@ -99,8 +99,8 @@ The schedule below is tentative and subject to change, depending on time and cla
 [(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/09-lasso-ate/09-lasso-ate.pdf)
 
 10. High-Dimensional Heterogeneous Treatment Effects
-[(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2020/master/10-trees-cate/10-trees-cate.html)
-[(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2020/master/10-trees-cate/10-trees-cate.pdf)
+[(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/10-trees-cate/10-trees-cate.html)
+[(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/10-trees-cate/10-trees-cate.pdf)
 
 ### Part III: Unsupervised Learning
 
