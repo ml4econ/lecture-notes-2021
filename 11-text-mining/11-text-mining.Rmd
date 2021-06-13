@@ -210,11 +210,10 @@ __NOTE:__ Using $n$-gram with $n$>2 is typically impractical due to the fact tha
 Here is our sample text (just 2 "documents" in this example), where tokens are defined as _bi-gram_ (a sequence of two words):
 
 ```{r}
-txt %>% quanteda::dfm(ngrams = 1:2,
-            remove = stopwords("english"),
-            remove_punct = TRUE,
-            remove_numbers = TRUE,
-            stem = TRUE)
+txt %>% 
+  tokens(remove_punct = TRUE, remove_numbers = TRUE) %>%
+  tokens_ngrams() %>% 
+  dfm()
 ```
 
 

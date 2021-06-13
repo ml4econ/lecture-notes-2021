@@ -1,1 +1,1 @@
-pagedown::chrome_print("12-text-mining/12-text-mining.html")
+pagedown::chrome_print("11-text-mining/11-text-mining.html", wait = 300)

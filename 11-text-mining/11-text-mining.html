@@ -207,19 +207,23 @@ Here is our sample text (just 2 "documents" in this example), where tokens are d
 
 
 ```r
-txt %&gt;% quanteda::dfm(ngrams = 1:2,
-            remove = stopwords("english"),
-            remove_punct = TRUE,
-            remove_numbers = TRUE,
-            stem = TRUE)
+txt %&gt;% 
+  tokens(remove_punct = TRUE, remove_numbers = TRUE) %&gt;%
+  tokens_ngrams() %&gt;% 
+  dfm()
 ```
 
 ```
-## Document-feature matrix of: 2 documents, 8 features (50.0% sparse).
+## Document-feature matrix of: 2 documents, 12 features (50.0% sparse).
 ##       features
-## docs   shipment gold damag fire deliveri silver arriv truck
-##   doc1        1    1     1    1        0      0     0     0
-##   doc2        0    0     0    0        1      2     1     1
+## docs   shipment_of of_gold gold_damaged delivery_of damaged_in of_silver in_a
+##   doc1           1       1            1           0          1         0    1
+##   doc2           0       0            0           1          0         1    0
+##       features
+## docs   a_fire silver_arrived arrived_in
+##   doc1      1              0          0
+##   doc2      0              1          1
+## [ reached max_nfeat ... 2 more features ]
 ```
 
 
@@ -334,16 +338,16 @@ sample_n(get_sentiments("loughran"),8)
 
 ```
 ## # A tibble: 8 x 2
-##   word          sentiment   
-##   &lt;chr&gt;         &lt;chr&gt;       
-## 1 exposures     uncertainty 
-## 2 solves        positive    
-## 3 differed      uncertainty 
-## 4 confident     positive    
-## 5 juris         litigious   
-## 6 impose        constraining
-## 7 profitability positive    
-## 8 questioning   negative
+##   word          sentiment
+##   &lt;chr&gt;         &lt;chr&gt;    
+## 1 falsely       negative 
+## 2 imperfection  negative 
+## 3 uninsured     negative 
+## 4 obligor       litigious
+## 5 ignore        negative 
+## 6 subparagraph  litigious
+## 7 unenforceable litigious
+## 8 pleasure      positive
 ```
 
 
