@@ -104,6 +104,9 @@ The schedule below is tentative and subject to change, depending on time and cla
 
 ### Part III: Unsupervised Learning
 
+11. Text Mining
+[(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/11-text-mining/11-text-mining.html)
+[(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/11-text-mining/11-text-mining.pdf)
 
 ### Projects
 

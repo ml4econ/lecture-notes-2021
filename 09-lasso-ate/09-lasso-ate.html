@@ -20,7 +20,7 @@ class: center, middle, inverse, title-slide
 # 09 - High-Dimensional Confounding Adjustment
 ## ml4econ, HUJI 2021
 ### Itamar Caspi
-### May 30, 2021 (updated: 2021-05-30)
+### May 30, 2021 (updated: 2021-06-06)
 
 ---
 
@@ -211,9 +211,9 @@ __NOTE:__ The high-dimension's lower eigenvalue condition replaces the low-dimen
 
 # Critical assumption #2: Distinguishable active predictors
 
-_Irrepresentability condition_ (Zou ,2006; Zhao and Yu, 2006): There must exist some `\(\eta\in[0,1)\)` such that  
+_Irrepresentability condition_ (Zou ,2006; Zhao and Yu, 2006): There must exist some `\(\eta&gt;0\)` such that  
 
-`$$\max _{j \in S^{c}}\left\|\left(\mathbf{X}_{S}^{\prime} \mathbf{X}_{S}\right)^{-1} \mathbf{X}_{S}^{\prime} \mathbf{x}_{j}\right\|_{1} \leq \eta$$`
+`$$\max _{j \in S^{c}}\left\|\left(\mathbf{X}_{S}^{\prime} \mathbf{X}_{S}\right)^{-1} \mathbf{X}_{S}^{\prime} \mathbf{x}_{j}\right\|_{1} \leq 1-\eta$$`
 
 
 __INTUITION__: What's inside `\(\left\|\cdot\right\|_{1}\)` is like regressing `\(\mathbf{x}_{j}\)` on the variables in `\(\mathbf{X}_s\)` .
