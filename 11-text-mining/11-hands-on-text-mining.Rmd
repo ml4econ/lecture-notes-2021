@@ -268,20 +268,22 @@ td_beta %>%
 Tidy the results and plot $\gamma$ (The distribution of correlated LDA's $\mu$)
 
 ```{r}
-td_gamma <- 
+td_gamma <- topic_model %>% 
   tidy(
-    topic_model,
     matrix = "gamma",
     document_names = rownames(dfm)
   )
+```
+Each of these values is an estimated proportion of words from that document that are generated from that topic.
 
+```{r}
 td_gamma %>% 
   ggplot(aes(gamma, fill = as.factor(topic))) +
-  geom_histogram(alpha = 0.8, show.legend = FALSE) +
-  facet_wrap(~ topic, ncol = 2) +
+  geom_histogram(show.legend = FALSE) +
+  facet_wrap(~ topic) +
   labs(
     title = "Distribution of document probabilities for each topic",
-    y = "Number of minutes",
+    y = "Number of documents",
     x = expression(gamma)
   )
 ```

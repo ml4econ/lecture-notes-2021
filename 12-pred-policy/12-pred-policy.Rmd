@@ -345,11 +345,13 @@ include_graphics("figs/fp.png")
 
 Fairness Properties for Risk Assignments (Kleinberg, Mullainathan, and  Raghavan ,2017):
 
-__(A)__ _Calibration within groups_, e.g., the score returned from COMPAS for a defendant should reflect the probability of re-offending.
+__(A)__ _Calibration within groups_, e.g., the score returned from COMPAS for a defendant within racial group should reflect the probability of re-offending.
 
-__(B)__ _Balance for the negative class_: false positive rates must be equal for all groups, i.e., the assignment of scores shouldn’t be systematically more inaccurate for negative instances in one group than the other.
+__(B)__ _Balance for the negative class_: the assignment of
+scores shouldn’t be systematically more inaccurate for negative instances in one group than the other.
 
-__(C)__ _Balance for the positive class_, e.g., predicted recidivism risk assigned to people of group 1 who belong to the positive class should be the same as the average score assigned to people of group 2 who belong to the positive class.
+__(C)__ _Balance for the positive class_, requires that the average score assigned to people of group 1 who belong to the positive class should be the same as the average score assigned to people of group 2 who belong to the positive class.
+
 
 
 
@@ -367,7 +369,7 @@ Kleinberg, Mullainathan, and  Raghavan (2017):
 ---
 # Illustration
 
-Perfect prediction for group __a__, 1 false positive for group __b__
+Perfect prediction for group __a__, 1 false positive for group __b__ (1="negative" class, 0="positive" class)
 
 
 ```{r, echo=FALSE, out.width = "90%", fig.align='center'}
@@ -381,7 +383,7 @@ _Source:_ [https://towardsdatascience.com/a-tutorial-on-fairness-in-machine-lear
 ---
 # Illustration
 
-Now, the true positive rates as well as true negative rates are equal for both groups (both have 1/2 and 1):
+Now, the true positive rates as well as the true negative rates are equal for both groups (both have 1/2 and 1):
 
 ```{r, echo=FALSE, out.width = "90%", fig.align='center'}
 
@@ -567,7 +569,7 @@ class: .title-slide-final, center, inverse, middle
 
 # `slides %>% end()`
 
-[<i class="fa fa-github"></i> Source code](https://github.com/ml4econ/lecture-notes-2020/tree/master/11-pred-policy)  
+[<i class="fa fa-github"></i> Source code](https://github.com/ml4econ/lecture-notes-2021/tree/master/12-pred-policy)  
 
 
 
