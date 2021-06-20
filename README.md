@@ -108,6 +108,13 @@ The schedule below is tentative and subject to change, depending on time and cla
 [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/11-text-mining/11-text-mining.html)
 [(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/11-text-mining/11-text-mining.pdf)
 
+### Part IV: Miscellaneous
+
+12. Prediction Policy and Algorithmic Bias
+[(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/12-pred-policy/12-pred-policy.html)
+[(PDF)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/12-pred-policy/12-pred-policy.html)
+
+
 ### Projects
 
 A. Kaggle competition [(HTML)](https://raw.githack.com/ml4econ/lecture-notes-2021/master/a-kaggle/a-kaggle.html)
